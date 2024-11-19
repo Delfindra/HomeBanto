@@ -20,9 +20,7 @@ class MenuResource extends Resource
 {
     protected static ?string $model = Menu::class;
 
-    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-4.svg';
-
-    protected static ?string $navigationLabel = 'Rekomendasi Menu';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
