@@ -18,24 +18,35 @@ class IngredientsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        // Filter data hanya untuk user yang sedang login
+        return parent::getEloquentQuery()->where('users_id', Auth::id());
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Hidden::make('users_id')
-                ->default(fn () => Auth::id()) // Menggunakan ID pengguna yang sedang login
-                ->required(),
+                    ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
+                    ->required(),
 
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->label('Ingredient Name')
                     ->placeholder('Enter ingredient name'),
-                    
+
+                Forms\Components\TextInput::make('quantity')
+                    ->required()
+                    ->label('Quantity')
+                    ->placeholder('Enter quantity'),
+
                 Forms\Components\DatePicker::make('purchase_date')
                     ->required()
                     ->maxDate(now())
                     ->label('Purchase Date'),
-                    
+
                 Forms\Components\DatePicker::make('expiry_date')
                     ->required()
                     ->label('Expiry Date')
@@ -50,22 +61,17 @@ class IngredientsResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Ingredient Name'),
-                    
+
+                Tables\Columns\TextColumn::make('quantity')
+                    ->label('Quantity'),
+
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('Purchase Date')
                     ->date(),
-                    
+
                 Tables\Columns\TextColumn::make('expiry_date')
                     ->label('Expiry Date')
                     ->date(),
-                    
-                Tables\Columns\TextColumn::make('created_by')
-                    ->label('Created By')
-                    ->getStateUsing(fn ($record) => $record->user->name ?? 'N/A'),
-            ])
-            ->filters([
-                Tables\Filters\Filter::make('Owned by User')
-                    ->query(fn (Builder $query) => $query->where('created_by', Auth::id())),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -77,9 +83,7 @@ class IngredientsResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            // Define any relationships here if needed
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -91,3 +95,4 @@ class IngredientsResource extends Resource
         ];
     }
 }
+

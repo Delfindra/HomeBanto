@@ -13,6 +13,7 @@ class ingredients extends Model
         'name',
         'expiry_date',
         'purchase_date',
+        'quantity',
         'created_at',
         'updated_at',
     ];
