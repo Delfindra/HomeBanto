@@ -22,6 +22,8 @@ class IngredientsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Inventaris Kulkas';
+
     public static function getEloquentQuery(): Builder
     {
         // Filter data hanya untuk user yang sedang login
