@@ -12,12 +12,15 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Textarea;
 
 class MenuResource extends Resource
 {
     protected static ?string $model = Menu::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationLabel = 'Rekomendasi Menu';
 
     public static function form(Form $form): Form
     {
@@ -27,8 +30,10 @@ class MenuResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('description')
                     ->required(),
-                Forms\Components\TextInput::make('intruction')
-                    ->required(),
+                Forms\Components\Textarea::make('intruction')
+                    ->required()
+                    ->rows(10)
+                    ->cols(20),
                 Forms\Components\TextInput::make('cooking_time')
                     ->required()
                     ->numeric(),
@@ -36,6 +41,8 @@ class MenuResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('image')
                     ->image()
+                    ->disk('public')
+                    ->preserveFilenames()
                     ->required(),
             ]);
     }
@@ -49,7 +56,11 @@ class MenuResource extends Resource
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('intruction')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => nl2br(e($state))) // Convert newlines to <br>
+                    ->html()
+                    ->wrap()
+                    ->limit(250),
                 Tables\Columns\TextColumn::make('cooking_time')
                     ->numeric()
                     ->sortable(),

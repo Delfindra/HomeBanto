@@ -11,9 +11,9 @@ class ingredients extends Model
     protected $fillable = [
         'users_id',
         'name',
-        'expiry_date',
-        'purchase_date',
         'quantity',
+        'purchase_date',
+        'expiry_date',  
         'created_at',
         'updated_at',
     ];

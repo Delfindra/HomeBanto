@@ -20,7 +20,7 @@ class recipes extends Model
     public function ingredients()
     {
         return $this->belongsToMany(
-            Ingredients::class,
+            ingredients::class,
             'recipe_ingredients_id',
             'recipe_id',
             'ingredient_id'
