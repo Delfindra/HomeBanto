@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('users_id'); // Kolom foreign key
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
+            $table->integer('quantity');
             $table->date('purchase_date');
             $table->date('expiry_date');
             $table->timestamps();
