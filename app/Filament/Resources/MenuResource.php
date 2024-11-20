@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Textarea;
+use App\Models\ingredients;
 
 class MenuResource extends Resource
 {
@@ -39,6 +40,12 @@ class MenuResource extends Resource
                     ->numeric(),
                 Forms\Components\TextInput::make('diffcutly_level')
                     ->required(),
+                Forms\Components\Select::make('ingredients')
+                    ->label('Ingredients')
+                    ->multiple()
+                    ->options(options: ingredients::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->required(),
                 Forms\Components\FileUpload::make('image')
                     ->image()
                     ->disk('public')
@@ -51,13 +58,18 @@ class MenuResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Gambar')
+                    ->width(200)
+                    ->height(200)
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('intruction')
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state))) // Convert newlines to <br>
+                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
@@ -65,10 +77,7 @@ class MenuResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar')
-                    ->disk('public'),
+                    ->searchable(),   
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

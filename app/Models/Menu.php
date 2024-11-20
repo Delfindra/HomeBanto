@@ -9,7 +9,16 @@ class Menu extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name', 'description', 'intruction', 'cooking_time', 'diffcutly_level', 'image',
+    ];
+
     protected $guarded = [
         'id',
     ];
+
+    public function ingredients()
+    {
+        return $this->hasMany(Ingredient::class);
+    }
 }
