@@ -116,9 +116,9 @@ class RecipeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMenus::route('/'),
-            'create' => Pages\CreateMenu::route('/create'),
-            'edit' => Pages\EditMenu::route('/{record}/edit'),
+            'index' => Pages\ListRecipes::route('/'),
+            'create' => Pages\CreateRecipe::route('/create'),
+            'edit' => Pages\EditRecipe::route('/{record}/edit'),
         ];
     }
 }
