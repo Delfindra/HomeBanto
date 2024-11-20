@@ -81,8 +81,10 @@ class MenuResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
-                    ->label('Kesulitan')
-                    ->sortable(),   
+                    ->searchable(),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Gambar')
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
