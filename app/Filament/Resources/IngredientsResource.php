@@ -19,6 +19,12 @@ class IngredientsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
+    
+
+    public static function getCreateButtonLabel(): string
+    {
+        return '+ Tambah Bahan';
+    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -62,21 +68,26 @@ class IngredientsResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Ingredient Name'),
+                    ->label('Nama Bahan'),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Quantity'),
+                    ->label('Stok'),
 
                 Tables\Columns\TextColumn::make('purchase_date')
-                    ->label('Purchase Date')
+                    ->label('Tanggal Pembelian')
                     ->date(),
 
                 Tables\Columns\TextColumn::make('expiry_date')
-                    ->label('Expiry Date')
+                    ->label('Tanggal Kadaluarsa')
                     ->date(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit') ,
+                Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')              
+                    ->modalHeading('Hapus Bahan')
+                    ->modalSubheading('Apakah anda yakin ingin menghapus bahan?'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
