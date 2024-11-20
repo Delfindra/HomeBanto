@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Textarea;
+use App\Models\ingredients;
 
 class MenuResource extends Resource
 {
@@ -81,10 +82,7 @@ class MenuResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar')
-                    ->disk('public'),
+                    ->searchable(),   
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
