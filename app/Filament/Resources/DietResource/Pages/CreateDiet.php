@@ -14,4 +14,5 @@ class CreateDiet extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+    
 }
