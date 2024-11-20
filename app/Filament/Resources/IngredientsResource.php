@@ -21,10 +21,7 @@ class IngredientsResource extends Resource
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
     
 
-    public static function getCreateButtonLabel(): string
-    {
-        return '+ Tambah Bahan';
-    }
+    
 
     public static function getEloquentQuery(): Builder
     {

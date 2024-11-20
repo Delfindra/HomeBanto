@@ -66,7 +66,9 @@ class MenuResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Gambar')
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
