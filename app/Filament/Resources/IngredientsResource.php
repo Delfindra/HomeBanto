@@ -20,7 +20,7 @@ class IngredientsResource extends Resource
 {
     protected static ?string $model = Ingredients::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-3.svg';
 
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
     

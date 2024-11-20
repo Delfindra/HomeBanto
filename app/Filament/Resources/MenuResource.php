@@ -14,13 +14,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Textarea;
-use App\Models\ingredients;
+
 
 class MenuResource extends Resource
 {
     protected static ?string $model = Menu::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-4.svg';
 
     protected static ?string $navigationLabel = 'Rekomendasi Menu';
 
@@ -82,7 +82,8 @@ class MenuResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
-                    ->searchable(),   
+                    ->label('Kesulitan')
+                    ->sortable(),   
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

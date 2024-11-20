@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\RecipeResource\Pages;
+namespace App\Filament\Resources\MenuResource\Pages;
 
-use App\Filament\Resources\RecipeResource;
+use App\Filament\Resources\MenuResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditRecipe extends EditRecord
 {
-    protected static string $resource = RecipeResource::class;
+    protected static string $resource = MenuResource::class;
 
     protected function getHeaderActions(): array
     {
