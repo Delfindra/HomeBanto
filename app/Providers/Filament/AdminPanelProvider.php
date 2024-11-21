@@ -7,10 +7,19 @@ use Althinect\FilamentSpatieRolesPermissions\Resources\PermissionResource;
 use Althinect\FilamentSpatieRolesPermissions\Resources\RoleResource;
 use App\Livewire\CustomProfileComponent;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use App\Filament\Resources\DietResource;
+use App\Filament\Resources\IngredientsResource;
+use App\Filament\Resources\MasterDataResource;
+use App\Filament\Resources\UserResource;
+use App\Models\Diet;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Widgets;
@@ -22,6 +31,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
+use Spatie\Permission\Models\Permission;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -67,6 +78,33 @@ class AdminPanelProvider extends PanelProvider
                 ]),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
             ])
+            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                return $builder->groups([
+                    NavigationGroup::make()
+                         ->items([
+                             NavigationItem::make('Dashboard')
+                                 ->icon('heroicon-o-home')
+                                 ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                                 ->url(fn (): string => Dashboard::getUrl()),
+                         ]),
+                    NavigationGroup::make('Admin')
+                        ->items([
+                            ...DietResource::getNavigationItems(),
+                            ...IngredientsResource::getNavigationItems(),
+                            ...UserResource::getNavigationItems(),
+                            ...MasterDataResource::getNavigationItems(),
+                            ...PermissionResource::getNavigationItems(),
+                            ...RoleResource::getNavigationItems()
+                        ]),
+                    NavigationGroup::make('Setting')
+                    ->items([
+                        NavigationItem::make('My Profile')
+                            ->icon('heroicon-o-user')
+                            ->url(fn (): string => EditProfilePage::getUrl())
+                            ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.my-profile')),
+                    ])
+                ]);
+            })
             ->authMiddleware([
                 Authenticate::class,
                 \Hasnayeen\Themes\Http\Middleware\SetTheme::class
