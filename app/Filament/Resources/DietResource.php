@@ -19,6 +19,8 @@ class DietResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Admin';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -26,9 +28,6 @@ class DietResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TagsInput::make('ingredients')
-                    ->separator(',')
-                    ->required(),
                 Forms\Components\TextInput::make('description')
                     ->required()
                     ->maxLength(255),
@@ -41,7 +40,6 @@ class DietResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('ingredients'),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -69,7 +67,7 @@ class DietResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\DietIngredientsRelationManager::class,
         ];
     }
 
