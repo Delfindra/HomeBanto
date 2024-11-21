@@ -21,9 +21,9 @@ class MasterDataResource extends Resource
 
     protected static ?string $navigationGroup = 'Admin';
 
-    protected static ?string $modelLabel = 'Ingredient Datas';
+    protected static ?string $modelLabel = 'Database Bahan';
 
-    protected static ?string $navigationLabel = 'Ingredient Datas';
+    protected static ?string $navigationLabel = 'Database Bahan';
 
     public static function form(Form $form): Form
     {
@@ -33,6 +33,11 @@ class MasterDataResource extends Resource
                     ->label('Ingredient Name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('image')
+                    ->image()
+                    ->disk('public')
+                    ->preserveFilenames()
+                    ->required(),
             ]);
     }
 
@@ -40,8 +45,13 @@ class MasterDataResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Gambar')
+                    ->width(50)
+                    ->height(50)
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Ingredient')
+                    ->label('Nama Bahan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
