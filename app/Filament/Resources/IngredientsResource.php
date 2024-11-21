@@ -71,6 +71,7 @@ class IngredientsResource extends Resource
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Bahan'),
 
@@ -112,4 +113,6 @@ class IngredientsResource extends Resource
         ];
     }
 }
+
+
 
