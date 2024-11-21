@@ -21,7 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'custom_fields',
+        'diet_id'
     ];
 
     /**
@@ -44,7 +44,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'custom_fields' => 'array'
         ];
     }
 
@@ -55,7 +54,7 @@ class User extends Authenticatable
 
     public function allergies()
     {
-        return $this->hasMany(allergies::class, 'user_id', 'user_id');
+        return $this->hasMany(allergies::class);
     }
 
     public function ingredients()

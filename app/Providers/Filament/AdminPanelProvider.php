@@ -59,6 +59,9 @@ class AdminPanelProvider extends PanelProvider
                 ->setNavigationLabel('My Profile')
                 ->setIcon('heroicon-o-user')
                 ->setSort(-1)
+                ->customProfileComponents([
+                    \App\Livewire\CustomProfileComponent::class,
+                ])
             ])
             ->authMiddleware([
                 Authenticate::class,
