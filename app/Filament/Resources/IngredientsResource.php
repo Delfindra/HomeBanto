@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class IngredientsResource extends Resource
 {
@@ -37,10 +38,34 @@ class IngredientsResource extends Resource
                     ->label('Ingredient Name')
                     ->placeholder('Enter ingredient name'),
 
+                Forms\Components\Select::make('category')
+                    ->required()
+                    ->label('Food Category')
+                    ->options([
+                        'fruit' => 'Fruit',
+                        'vegetable' => 'Vegetable',
+                        'livestock' => 'Livestock',
+                        'snack' => 'Snack',
+                        'beverage' => 'Beverage',
+                        'dry_food' => 'Dry Food',
+                        'staple_food' => 'Staple Food',
+                        'seafood' => 'Seafood',
+                        'seasonings' => 'Seasonings',
+                    ])
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
+
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
-                    ->placeholder('Enter quantity'),
+                    ->placeholder('Enter quantity')
+                    ->suffix(fn ($get) => match ($get('category')) {
+                        'fruit' => 'pcs',
+                        'vegetable' => 'kg',
+                        'beverage' => 'liters',
+                        'seasonings' => 'g',
+                        default => 'units',
+                    }),
 
                 Forms\Components\DatePicker::make('purchase_date')
                     ->required()
@@ -52,6 +77,8 @@ class IngredientsResource extends Resource
                     ->label('Expiry Date')
                     ->after('purchase_date')
                     ->placeholder('Enter expiry date'),
+                
+
             ]);
     }
 
@@ -60,18 +87,42 @@ class IngredientsResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Ingredient Name'),
+                    ->label('Ingredient Name')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('category')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Food Category'),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Quantity'),
+                    ->searchable()
+                    ->label('Quantity')
+                    ->formatStateUsing(fn ($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' pcs',
+                        'vegetable' => $record->quantity . ' kg',
+                        'beverage' => $record->quantity . ' liters',
+                        'seasonings' => $record->quantity . ' g',
+                        default => $record->quantity . ' units',
+                    }),
 
                 Tables\Columns\TextColumn::make('purchase_date')
+                    ->sortable()
+                    ->searchable()
                     ->label('Purchase Date')
                     ->date(),
 
                 Tables\Columns\TextColumn::make('expiry_date')
+                    ->sortable()
+                    ->searchable()
                     ->label('Expiry Date')
                     ->date(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->searchable()
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -80,7 +131,7 @@ class IngredientsResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
     public static function getRelations(): array
     {
         return [];
