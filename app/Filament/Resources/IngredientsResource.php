@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\IngredientsResource\Pages;
 use App\Models\Ingredients;
 use App\Models\User;
+use App\Models\MasterData;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 use App\Models\MasterData;
 use App\Notifications\FoodExpirationNotification;
 
+
 class IngredientsResource extends Resource
 {
     protected static ?string $model = Ingredients::class;
@@ -24,7 +26,10 @@ class IngredientsResource extends Resource
 
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
     
-
+    public static function getLabel(): string
+    {
+        return 'Inventaris Kulkas';
+    }
     
 
     public static function getEloquentQuery(): Builder

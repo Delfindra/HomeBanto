@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('intruction');
+            $table->text('intruction');
             $table->integer('cooking_time');
             $table->string('diffcutly_level');
             $table->string('image');

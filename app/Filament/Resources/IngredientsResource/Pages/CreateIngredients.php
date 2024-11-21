@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\IngredientsResource\Pages;
 
 use App\Filament\Resources\IngredientsResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use App\Models\MasterData;
 
 class CreateIngredients extends CreateRecord
 {
