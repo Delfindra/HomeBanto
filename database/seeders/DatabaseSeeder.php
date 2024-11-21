@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +16,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        User::factory()->create([
-            'name' => 'Test User',
+        $permissions = ['edit Post', 'delete Post', 'publish Post'];
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
+        $editorRole = Role::firstOrCreate(['name' => 'editor']);
+
+        $editorRole->givePermissionTo(['name'=>'edit Post']);
+        $adminRole->givePermissionTo($permissions);
+
+        $admin = User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+        ]);
+        $admin->assignRole($adminRole);
+
+
+        $user =User::factory()->create([
             'email' => 'test@example.com',
         ]);
+
+        $user->assignRole($userRole);
+        $editor =User::factory()->create([
+            'name' => 'Editor',
+            'email' => 'editor@example.com'
+        ]);
+        $editor->assignRole($editorRole);
     }
 }
