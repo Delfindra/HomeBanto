@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->json('custom_fields')->nullable();
-        });
+        if (!Schema::hasColumn('users', 'custom_fields')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->json('custom_fields')->nullable();
+            });
+        }
     }
 
     /**
