@@ -11,6 +11,10 @@ class MasterData extends Model
 
     protected $table = 'master_data';
 
+    protected $fillable = [
+        'image'
+    ];
+
     protected $guarded = [
         'id'
     ];

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('master_data', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->binary('image');
             $table->timestamps();
         });
     }
