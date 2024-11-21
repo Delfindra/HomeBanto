@@ -123,8 +123,8 @@ class MenuResource extends Resource
     {
         return [
             'index' => Pages\ListMenus::route('/'),
-            //'create' => Pages\CreateMenu::route('/create'),
-            //'edit' => Pages\EditMenu::route('/{record}/edit'),
+            'create' => Pages\CreateMenu::route('/create'),
+            'edit' => Pages\EditMenu::route('/{record}/edit'),
         ];
     }
 }

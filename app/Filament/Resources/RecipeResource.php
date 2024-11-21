@@ -3,22 +3,18 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Filament\Resources\MenuResource\RelationManagers;
-use App\Models\Menu;
+use App\Models\recipes;
 use App\Models\ingredients;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Textarea;
 
 
 class RecipeResource extends Resource
 {
-    protected static ?string $model = Menu::class;
+    protected static ?string $model = recipes::class;
 
     protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-5.svg';
 
@@ -30,7 +26,6 @@ class RecipeResource extends Resource
     }
 
 
-
     public static function form(Form $form): Form
     {
         return $form
@@ -39,14 +34,14 @@ class RecipeResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('description')
                     ->required(),
-                Forms\Components\Textarea::make('intruction')
+                Forms\Components\Textarea::make('instruction')
                     ->required()
                     ->rows(10)
                     ->cols(20),
                 Forms\Components\TextInput::make('cooking_time')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('diffcutly_level')
+                Forms\Components\TextInput::make('dificulty_level')
                     ->required(),
                 Forms\Components\Select::make('ingredients')
                     ->label('Ingredients')
@@ -76,8 +71,10 @@ class RecipeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
+                    ->wrap()
+                    ->limit(250)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('intruction')
+                Tables\Columns\TextColumn::make('instruction')
                     ->label('Instruksi')    
                     ->searchable()
                     ->formatStateUsing(fn ($state) => nl2br(e($state)))
@@ -88,7 +85,7 @@ class RecipeResource extends Resource
                     ->label('Waktu/menit')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('diffcutly_level')
+                Tables\Columns\TextColumn::make('dificulty_level')
                     ->label('Kesulitan')
                     ->sortable(),   
                 Tables\Columns\TextColumn::make('created_at')
@@ -123,9 +120,9 @@ class RecipeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRecipes::route('/'),
-            'create' => Pages\CreateRecipe::route('/create'),
-            'edit' => Pages\EditRecipe::route('/{record}/edit'),
+            'index' => RecipeResource\Pages\ListRecipes::route('/'),
+            'create' => RecipeResource\Pages\CreateRecipe::route('/create'),
+            'edit' => RecipeResource\Pages\EditRecipe::route('/{record}/edit'),
         ];
     }
 }

@@ -3,18 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Ingredients;
 
 class recipes extends Model
 {
-    protected $table = 'recipes';
+    use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'cooking_time',
-        'image_url',
-        'created_at',
-        'updated_at',
+        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time',
+    ];
+
+    protected $guarded = [
+        'id',
     ];
 
     public function ingredients()

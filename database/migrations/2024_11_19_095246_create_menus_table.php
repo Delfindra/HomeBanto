@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
             $table->text('intruction');
             $table->integer('cooking_time');
-            $table->string('diffcutly_level');
+            $table->integer('diffcutly_level');
             $table->string('image');
             $table->timestamps();
         });
