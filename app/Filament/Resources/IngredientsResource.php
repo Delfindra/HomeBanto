@@ -52,6 +52,23 @@ class IngredientsResource extends Resource
                     ->reactive() // Makes the form field react to changes
                     ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
+                Forms\Components\Select::make('category')
+                    ->required()
+                    ->label('Food Category')
+                    ->options([
+                        'fruit' => 'Fruit',
+                        'vegetable' => 'Vegetable',
+                        'livestock' => 'Livestock',
+                        'snack' => 'Snack',
+                        'beverage' => 'Beverage',
+                        'dry_food' => 'Dry Food',
+                        'staple_food' => 'Staple Food',
+                        'seafood' => 'Seafood',
+                        'seasonings' => 'Seasonings',
+                    ])
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
+
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
@@ -79,6 +96,8 @@ class IngredientsResource extends Resource
                     ->label('Expiry Date')
                     ->after('purchase_date')
                     ->placeholder('Enter expiry date'),
+                
+
             ]);
     }
 
