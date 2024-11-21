@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -51,9 +52,17 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
         ];
     }
+    protected static function booted()
+    {
+        static::created(function (User $user) {
+            $user->assignRole('user'); // Replace 'user' with your desired default role
+        });
+    }
     public function canAccessPanel(Panel $panel): bool
     {
-        // return $this->hasRole( 'admin');
+        if ($panel->getId() === 'admin') {
+            return $this->hasRole( 'admin') && $this->hasVerifiedEmail();
+        }
         return true;
     }
 
