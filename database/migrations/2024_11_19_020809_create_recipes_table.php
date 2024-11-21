@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
+            $table->text('instruction');
+            $table->integer('dificulty_level');
             $table->binary('image');
             $table->integer('cooking_time');
             $table->timestamps();

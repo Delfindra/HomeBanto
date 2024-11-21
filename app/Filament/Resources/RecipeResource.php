@@ -24,6 +24,13 @@ class RecipeResource extends Resource
 
     protected static ?string $navigationLabel = 'Resep';
 
+    public static function getLabel(): string
+    {
+        return 'Resep';
+    }
+
+
+
     public static function form(Form $form): Form
     {
         return $form

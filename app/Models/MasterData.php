@@ -9,6 +9,8 @@ class MasterData extends Model
 {
     use HasFactory;
 
+    protected $table = 'master_data';
+
     protected $guarded = [
         'id'
     ];

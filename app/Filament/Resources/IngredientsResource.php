@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\IngredientsResource\Pages;
 use App\Models\Ingredients;
+use App\Models\MasterData;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -11,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+
 
 class IngredientsResource extends Resource
 {
@@ -20,7 +22,10 @@ class IngredientsResource extends Resource
 
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
     
-
+    public static function getLabel(): string
+    {
+        return 'Inventaris Kulkas';
+    }
     
 
     public static function getEloquentQuery(): Builder
@@ -37,10 +42,12 @@ class IngredientsResource extends Resource
                     ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
                     ->required(),
 
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('name')
                     ->required()
-                    ->label('Ingredient Name')
-                    ->placeholder('Enter ingredient name'),
+                    ->label('Bahan')
+                    ->options(MasterData::all()->pluck('name', 'name'))
+                    ->searchable()
+                    ->placeholder('Pilih Bahan'),
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
