@@ -115,6 +115,7 @@ class IngredientsResource extends Resource
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Ingredient Name')
                     ->searchable(),
@@ -211,4 +212,6 @@ class IngredientsResource extends Resource
         ];
     }
 }
+
+
 
