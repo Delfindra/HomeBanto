@@ -15,6 +15,8 @@ use Livewire\Component;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Joaopaulolndev\FilamentEditProfile\Concerns\HasSort;
+use Filament\Notifications\Notification;
+
 
 class CustomProfileComponent extends Component implements HasForms
 {
@@ -72,7 +74,11 @@ class CustomProfileComponent extends Component implements HasForms
                 'user_id' => $user -> id,
             ]);
         }
-        
+
+        Notification::make()
+        ->title('Your preference information has been saved successfully.')
+        ->success()
+        ->send();
     }
 
     public function render(): View
