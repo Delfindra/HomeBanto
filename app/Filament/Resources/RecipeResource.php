@@ -45,26 +45,14 @@ class RecipeResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('ingredient')
                     ->label('Ingredients')
-                    ->default(function ($record) {
-                        // Check if the record exists (i.e., not null) and has an 'ingredient' field
-                        if ($record && isset($record->ingredient) && !empty($record->ingredient)) {
-                            // Split the LONGTEXT string into an array based on commas (assuming ingredients are comma-separated)
-                            $ingredients = explode(',', $record->ingredient);
-                            
-                            // Trim whitespace from each ingredient (optional but recommended)
-                            $ingredients = array_map('trim', $ingredients);
-                            
-                            // Return the array of ingredients as the default selected values
-                            return $ingredients;
-                        }
-                
-                        // Return an empty array for new records (no ingredients selected yet)
-                        return [];
-                    })
                     ->multiple()
                     ->options(options: MasterData::all()->pluck('name', 'name'))
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->default(function ($record) {
+                        // Check if the field has a value and decode it into an array
+                        return $record && isset($record->preferences) ? json_decode($record->preferences, true) : [];
+                    }),
                 Forms\Components\FileUpload::make('image')
                     ->image()
                     ->disk('public')
@@ -93,7 +81,6 @@ class RecipeResource extends Resource
                 Tables\Columns\TextColumn::make('instruction')
                     ->label('Instruksi')    
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
@@ -106,11 +93,7 @@ class RecipeResource extends Resource
                     ->sortable(),   
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Ingredients')
-                    ->formatStateUsing(function ($state) {
-                        // Decode the JSON data and format it as a comma-separated list
-                        $ingredients = json_decode($state, true);
-                        return is_array($ingredients) ? implode('<br>', $ingredients) : '';
-                    })
+                    ->formatStateUsing(fn($state) => nl2br(str_replace(',', "\n", $state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
