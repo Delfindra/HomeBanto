@@ -40,7 +40,8 @@ class RecipeResource extends Resource
                     ->cols(20),
                 Forms\Components\TextInput::make('cooking_time')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->suffix(' menit'),
                 Forms\Components\TextInput::make('dificulty_level')
                     ->required(),
                 Forms\Components\Select::make('ingredient')
@@ -67,8 +68,8 @@ class RecipeResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(200)
-                    ->height(200)
+                    ->width(150)
+                    ->height(150)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Menu')    
@@ -81,12 +82,14 @@ class RecipeResource extends Resource
                 Tables\Columns\TextColumn::make('instruction')
                     ->label('Instruksi')    
                     ->searchable()
+                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
                 Tables\Columns\TextColumn::make('cooking_time')
-                    ->label('Waktu/menit')
+                    ->label('Waktu')
                     ->numeric()
+                    ->suffix(' menit')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('dificulty_level')
                     ->label('Kesulitan')
@@ -97,20 +100,21 @@ class RecipeResource extends Resource
                     ->html()
                     ->wrap()
                     ->limit(250),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

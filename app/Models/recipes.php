@@ -4,20 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\DB;
-use App\Models\Ingredients;
 
 class recipes extends Model
 {
     use HasFactory;
 
-    public function menu()
-    {
-        return $this->belongsTo(Menu::class); // Assuming 'menu_id' is the foreign key in the 'recipes' table
-    }
+    protected $table = 'recipes';
 
     protected $fillable = [
-        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time', 'ingredient'
+        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time', 'ingredient',
     ];
 
     protected $guarded = [
