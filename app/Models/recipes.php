@@ -18,6 +18,10 @@ class recipes extends Model
         'id',
     ];
 
+    protected $casts = [
+        'ingredient' => 'array', // Assuming "preferences" is your LONGTEXT field
+    ];
+
     public function ingredients()
     {
         return $this->belongsToMany(
