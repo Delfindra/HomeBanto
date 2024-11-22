@@ -41,12 +41,14 @@ class IngredientsResource extends Resource
                     ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
                     ->required(),
 
+
                 Forms\Components\Select::make('name')
                     ->required()
                     ->label('Bahan')
                     ->options(MasterData::all()->pluck('name', 'name'))
                     ->searchable()
-                    ->placeholder('Pilih Bahan'),
+                    ->placeholder('Pilih Bahan')
+                    ->reactive(),
 
                 Forms\Components\Select::make('category')
                     ->required()
@@ -101,7 +103,14 @@ class IngredientsResource extends Resource
                     ->label('Ingredient Name'),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Quantity'),
+                    ->label('Quantity')
+                    ->formatStateUsing(fn ($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' pcs',
+                        'vegetable' => $record->quantity . ' kg',
+                        'beverage' => $record->quantity . ' liters',
+                        'seasonings' => $record->quantity . ' g',
+                        default => $record->quantity . ' units',
+                    }),
 
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('Purchase Date')
