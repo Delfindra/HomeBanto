@@ -62,6 +62,10 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             // Rethrow the exception if it's not related to the duplicate email
             throw $e;
         }
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
     protected static function booted()
