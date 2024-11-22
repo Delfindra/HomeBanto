@@ -56,7 +56,7 @@ class IngredientsResource extends Resource
                     ->options([
                         'fruit' => 'Fruit',
                         'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
+                        'meat' => 'Meat',
                         'snack' => 'Snack',
                         'beverage' => 'Beverage',
                         'dry_food' => 'Dry Food',
@@ -74,8 +74,9 @@ class IngredientsResource extends Resource
                     ->suffix(fn ($get) => match ($get('category')) {
                         'fruit' => 'pcs',
                         'vegetable' => 'kg',
+                        'meat' => 'kg',
                         'beverage' => 'liters',
-                        'seasonings' => 'g',
+                        'seasonings' => 'g',           
                         default => 'units',
                     }),
 
@@ -109,6 +110,7 @@ class IngredientsResource extends Resource
                         'vegetable' => $record->quantity . ' kg',
                         'beverage' => $record->quantity . ' liters',
                         'seasonings' => $record->quantity . ' g',
+                        'meat' => $record->quantity . ' kg',
                         default => $record->quantity . ' units',
                     }),
 
