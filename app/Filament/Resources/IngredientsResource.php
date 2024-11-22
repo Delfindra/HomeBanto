@@ -46,6 +46,7 @@ class IngredientsResource extends Resource
                     ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
                     ->required(),
 
+
                 Forms\Components\Select::make('name')
                     ->required()
                     ->label('Ingredient Name')
