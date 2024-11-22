@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\IngredientsResource\Pages;
 use App\Models\Ingredients;
 use App\Models\User;
-use App\Models\MasterData;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -69,7 +68,7 @@ class IngredientsResource extends Resource
                     ->options([
                         'fruit' => 'Fruit',
                         'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
+                        'meat' => 'Meat',
                         'snack' => 'Snack',
                         'beverage' => 'Beverage',
                         'dry_food' => 'Dry Food',
@@ -94,6 +93,9 @@ class IngredientsResource extends Resource
                         'staple_food' => 'kg',
                         'seafood' => 'gr',
                         'seasonings' => 'gr',
+                        'meat' => 'kg',
+                        'beverage' => 'liters',
+                        'seasonings' => 'g',           
                         default => 'units',
                     }),
 
@@ -140,6 +142,8 @@ class IngredientsResource extends Resource
                         'seafood' => $record->quantity .' gr',
                         'seasonings' => $record->quantity . ' gr',
                         default => $record->quantity .' units',
+                        'seasonings' => $record->quantity . ' g',
+                        'meat' => $record->quantity . ' kg',
                     }),
 
                 Tables\Columns\TextColumn::make('purchase_date')
