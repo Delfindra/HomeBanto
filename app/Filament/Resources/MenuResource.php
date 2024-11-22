@@ -58,15 +58,24 @@ class MenuResource extends Resource
                         return Ingredients::all()->pluck('name', 'id')->toArray();
                     })
                     ->query(function (Builder $query) {
-                        // Get the selected filter value using request()->input()
+                        // Fetch the list of available ingredients
+                        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
+    
+                        // Get the selected ingredient value from the request
                         $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
     
-                        // If there's a selected ingredient, filter by it
+                        // If a specific ingredient is selected, filter by that ingredient
                         if ($selectedIngredient) {
                             return $query->whereJsonContains('ingredient', $selectedIngredient);
                         }
     
-                        return $query;
+                        // If no ingredient is selected, filter by any available ingredient
+                        return $query->where(function ($query) use ($availableIngredients) {
+                            foreach ($availableIngredients as $ingredient) {
+                                // Check if the recipe's ingredient JSON contains any of the available ingredients
+                                $query->orWhereJsonContains('ingredient', $ingredient);
+                            }
+                        });
                     }),
             ])
             ->actions([
@@ -88,7 +97,6 @@ class MenuResource extends Resource
     {
         return [
             'index' => Pages\ListMenus::route('/'),
-            'edit' => Pages\EditMenu::route('/{record}/edit'),
         ];
     }
 }
