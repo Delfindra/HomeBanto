@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('ingredients')->nullable()->change();
+            $table->string('ingredients');
             $table->timestamps();
         });
     }
