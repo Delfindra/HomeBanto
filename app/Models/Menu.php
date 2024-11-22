@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Ingredients;
 
 
 class Menu extends Model
@@ -22,4 +23,5 @@ class Menu extends Model
     {
         return $this->hasMany(Ingredients::class);
     }
+
 }
