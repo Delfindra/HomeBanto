@@ -19,7 +19,7 @@ class recipes extends Model
     ];
 
     protected $casts = [
-        'ingredient' => 'array', // Assuming "preferences" is your LONGTEXT field
+        'ingredient' => 'array', // field ingredient JSON/LONGTEXT
     ];
 
     public function ingredients()
