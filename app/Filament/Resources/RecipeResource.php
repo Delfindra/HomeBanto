@@ -43,8 +43,24 @@ class RecipeResource extends Resource
                     ->numeric(),
                 Forms\Components\TextInput::make('dificulty_level')
                     ->required(),
-                Forms\Components\Select::make('ingredients')
+                Forms\Components\Select::make('ingredient')
                     ->label('Ingredients')
+                    ->default(function ($record) {
+                        // Check if the record exists (i.e., not null) and has an 'ingredient' field
+                        if ($record && isset($record->ingredient) && !empty($record->ingredient)) {
+                            // Split the LONGTEXT string into an array based on commas (assuming ingredients are comma-separated)
+                            $ingredients = explode(',', $record->ingredient);
+                            
+                            // Trim whitespace from each ingredient (optional but recommended)
+                            $ingredients = array_map('trim', $ingredients);
+                            
+                            // Return the array of ingredients as the default selected values
+                            return $ingredients;
+                        }
+                
+                        // Return an empty array for new records (no ingredients selected yet)
+                        return [];
+                    })
                     ->multiple()
                     ->options(options: MasterData::all()->pluck('name', 'name'))
                     ->searchable()
@@ -88,6 +104,16 @@ class RecipeResource extends Resource
                 Tables\Columns\TextColumn::make('dificulty_level')
                     ->label('Kesulitan')
                     ->sortable(),   
+                Tables\Columns\TextColumn::make('ingredient')
+                    ->label('Ingredients')
+                    ->formatStateUsing(function ($state) {
+                        // Decode the JSON data and format it as a comma-separated list
+                        $ingredients = json_decode($state, true);
+                        return is_array($ingredients) ? implode('<br>', $ingredients) : '';
+                    })
+                    ->html()
+                    ->wrap()
+                    ->limit(250),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

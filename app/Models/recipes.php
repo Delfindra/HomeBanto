@@ -11,7 +11,7 @@ class recipes extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time',
+        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time', 'ingredient'
     ];
 
     protected $guarded = [
