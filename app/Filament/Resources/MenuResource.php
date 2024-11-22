@@ -3,13 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Models\Menu;
 use App\Models\recipes;
 use App\Models\Ingredients;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class MenuResource extends Resource
 {
@@ -27,9 +25,6 @@ class MenuResource extends Resource
 
     public static function table(Table $table): Table
     {
-
-        $availableIngredients = Ingredients::pluck('name', 'name')->toArray();
-
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
