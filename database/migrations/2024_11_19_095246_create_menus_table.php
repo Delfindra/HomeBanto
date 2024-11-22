@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recipes', function (Blueprint $table) {
+        Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->text('instruction');
-            $table->integer('dificulty_level');
-            $table->binary('image');
+            $table->text('intruction');
             $table->integer('cooking_time');
-            $table->longText('ingredient')->nullable();
+            $table->integer('diffcutly_level');
+            $table->string('image');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recipes');
+        Schema::dropIfExists('menus');
     }
 };

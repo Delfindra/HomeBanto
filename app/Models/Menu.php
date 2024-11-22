@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class recipes extends Model
+
+class Menu extends Model
 {
     use HasFactory;
 
@@ -13,10 +14,6 @@ class recipes extends Model
 
     protected $fillable = [
         'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time', 'ingredient',
-    ];
-
-    protected $guarded = [
-        'id',
     ];
 
     protected $casts = [
@@ -27,4 +24,5 @@ class recipes extends Model
     {
         return $this->belongsToMany(Ingredients::class, 'ingredient_recipe', 'recipe_id', 'ingredient_id');
     }
+
 }

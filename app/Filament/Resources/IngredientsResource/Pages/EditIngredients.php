@@ -10,6 +10,12 @@ class EditIngredients extends EditRecord
 {
     protected static string $resource = IngredientsResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        // Redirect back to the index page after editing an ingredient
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

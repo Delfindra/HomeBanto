@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\MasterDataResource\Pages;
+namespace App\Filament\Resources\MenuResource\Pages;
 
-use App\Filament\Resources\MasterDataResource;
+use App\Filament\Resources\MenuResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateMasterData extends CreateRecord
+class CreateMenu extends CreateRecord
 {
-    protected static string $resource = MasterDataResource::class;
+    protected static string $resource = MenuResource::class;
 
     protected function getRedirectUrl(): string
     {

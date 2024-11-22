@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('master_data', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->binary('image');
-            $table->timestamps();
+        Schema::table('ingredients', function (Blueprint $table) {
+            $table->string('status')->default('Fresh'); // Default status is Fresh
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('master_data');
+        Schema::table('ingredients', function (Blueprint $table) {
+            //
+        });
     }
 };

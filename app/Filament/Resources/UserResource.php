@@ -38,21 +38,21 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(100),
 
-//                TextInput::make('password')
-//                    ->password()
-//                    ->required(fn (string $context): bool => $context === 'create')
-//                    ->minLength(8)
-//                    ->same('passwordConfirmation')
-//                    ->dehydrated(fn ($state) => filled($state))
-//                    ->dehydrateStateUsing(fn ($state) => Hash::make($state)),
-//
-//
-//                TextInput::make('passwordConfirmation')
-//                    ->password()
-//                    ->label('Password Confirmation')
-//                    ->required(fn (string $context): bool => $context === 'create')
-//                    ->minLength(8)
-//                    ->dehydrated(false),
+               TextInput::make('password')
+                   ->password()
+                   ->required(fn (string $context): bool => $context === 'create')
+                   ->minLength(8)
+                   ->same('passwordConfirmation')
+                   ->dehydrated(fn ($state) => filled($state))
+                   ->dehydrateStateUsing(fn ($state) => Hash::make($state)),
+
+
+               TextInput::make('passwordConfirmation')
+                   ->password()
+                   ->label('Password Confirmation')
+                   ->required(fn (string $context): bool => $context === 'create')
+                   ->minLength(8)
+                   ->dehydrated(false),
 
 
                 Select::make('roles')

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\IngredientsResource\Pages;
 use App\Models\Ingredients;
+use App\Models\MasterData;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,7 +17,15 @@ class IngredientsResource extends Resource
 {
     protected static ?string $model = Ingredients::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-3.svg';
+
+    protected static ?string $navigationLabel = 'Inventaris Kulkas';
+    
+    public static function getLabel(): string
+    {
+        return 'Inventaris Kulkas';
+    }
+    
 
     public static function getEloquentQuery(): Builder
     {
@@ -30,17 +39,45 @@ class IngredientsResource extends Resource
             ->schema([
                 Forms\Components\Hidden::make('users_id')
                     ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
-                    ->required(),
+                    ->required(), 
 
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('name')
                     ->required()
-                    ->label('Ingredient Name')
-                    ->placeholder('Enter ingredient name'),
+                    ->label('Bahan')
+                    ->options(MasterData::all()->pluck('name', 'name'))
+                    ->searchable()
+                    ->placeholder('Pilih Bahan')
+                    ->reactive(),
+
+                Forms\Components\Select::make('category')
+                    ->required()
+                    ->label('Food Category')
+                    ->options([
+                        'fruit' => 'Fruit',
+                        'vegetable' => 'Vegetable',
+                        'meat' => 'Meat',
+                        'snack' => 'Snack',
+                        'beverage' => 'Beverage',
+                        'dry_food' => 'Dry Food',
+                        'staple_food' => 'Staple Food',
+                        'seafood' => 'Seafood',
+                        'seasonings' => 'Seasonings',
+                    ])
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
-                    ->placeholder('Enter quantity'),
+                    ->placeholder('Enter quantity')
+                    ->suffix(fn ($get) => match ($get('category')) {
+                        'fruit' => 'pcs',
+                        'vegetable' => 'kg',
+                        'meat' => 'kg',
+                        'beverage' => 'liters',
+                        'seasonings' => 'g',           
+                        default => 'units',
+                    }),
 
                 Forms\Components\DatePicker::make('purchase_date')
                     ->required()
@@ -52,6 +89,8 @@ class IngredientsResource extends Resource
                     ->label('Expiry Date')
                     ->after('purchase_date')
                     ->placeholder('Enter expiry date'),
+                
+
             ]);
     }
 
@@ -59,11 +98,30 @@ class IngredientsResource extends Resource
     {
         return $table
             ->columns([
+
+                Tables\Columns\ImageColumn::make('ingredient_image')  // Custom column name
+                    ->label('Image')
+                    ->getStateUsing(function ($record) {
+                        // Get the image URL from the MasterData model based on the ingredient name
+                        $ingredient = MasterData::where('name', $record->name)->first();
+                        return $ingredient ? $ingredient->image : null;  // Fetch image from 'image' field
+                    })
+                    ->width(50)
+                    ->height(50),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Ingredient Name'),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Quantity'),
+                    ->label('Quantity')
+                    ->formatStateUsing(fn ($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' pcs',
+                        'vegetable' => $record->quantity . ' kg',
+                        'beverage' => $record->quantity . ' liters',
+                        'seasonings' => $record->quantity . ' g',
+                        'meat' => $record->quantity . ' kg',
+                        default => $record->quantity . ' units',
+                    }),
 
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('Purchase Date')
@@ -72,15 +130,26 @@ class IngredientsResource extends Resource
                 Tables\Columns\TextColumn::make('expiry_date')
                     ->label('Expiry Date')
                     ->date(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->searchable()
+                
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit') ,
+                Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')              
+                    ->modalHeading('Hapus Bahan')
+                    ->modalSubheading('Apakah anda yakin ingin menghapus bahan?'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
     public static function getRelations(): array
     {
         return [];
@@ -95,4 +164,6 @@ class IngredientsResource extends Resource
         ];
     }
 }
+
+
 

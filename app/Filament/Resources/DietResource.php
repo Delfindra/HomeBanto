@@ -28,9 +28,10 @@ class DietResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('description')
+                Forms\Components\Textarea::make('description')
                     ->required()
-                    ->maxLength(255),
+                    ->rows(10)
+                    ->cols(20),
             ]);
     }
 
@@ -41,6 +42,8 @@ class DietResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
+                    ->wrap()
+                    ->limit(1000)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
