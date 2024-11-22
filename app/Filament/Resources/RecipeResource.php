@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
 use App\Models\recipes;
-use App\Models\ingredients;
+use App\Models\MasterData;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -46,7 +46,7 @@ class RecipeResource extends Resource
                 Forms\Components\Select::make('ingredients')
                     ->label('Ingredients')
                     ->multiple()
-                    ->options(options: ingredients::all()->pluck('name', 'id'))
+                    ->options(options: MasterData::all()->pluck('name', 'name'))
                     ->searchable()
                     ->required(),
                 Forms\Components\FileUpload::make('image')
