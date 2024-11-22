@@ -21,14 +21,4 @@ class recipes extends Model
     protected $casts = [
         'ingredient' => 'array', // field ingredient JSON/LONGTEXT
     ];
-
-    public function ingredients()
-    {
-        return $this->belongsToMany(
-            ingredients::class,
-            'recipe_ingredients_id',
-            'recipe_id',
-            'ingredient_id'
-        );
-    }
 }
