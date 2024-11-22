@@ -10,10 +10,19 @@ class Menu extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $table = 'recipes';
 
-    protected $guarded = [
-        'id',
+    protected $fillable = [
+        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time', 'ingredient',
     ];
+
+    protected $casts = [
+        'ingredient' => 'array', // field ingredient JSON/LONGTEXT
+    ];
+
+    public function ingredients()
+    {
+        return $this->belongsToMany(Ingredients::class, 'ingredient_recipe', 'recipe_id', 'ingredient_id');
+    }
 
 }
