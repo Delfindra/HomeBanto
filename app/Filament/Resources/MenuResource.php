@@ -3,17 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Filament\Resources\MenuResource\RelationManagers;
 use App\Models\Menu;
-use App\Models\ingredients;
-use Filament\Forms;
-use Filament\Forms\Form;
+use App\Models\Recipe;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Textarea;
+use Illuminate\Support\Facades\DB;
 
 
 class MenuResource extends Resource
@@ -28,38 +23,6 @@ class MenuResource extends Resource
     {
         return false;
     }
-
-
-    // public static function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             Forms\Components\TextInput::make('name')
-    //                 ->required(),
-    //             Forms\Components\TextInput::make('description')
-    //                 ->required(),
-    //             Forms\Components\Textarea::make('intruction')
-    //                 ->required()
-    //                 ->rows(10)
-    //                 ->cols(20),
-    //             Forms\Components\TextInput::make('cooking_time')
-    //                 ->required()
-    //                 ->numeric(),
-    //             Forms\Components\TextInput::make('diffcutly_level')
-    //                 ->required(),
-    //             Forms\Components\Select::make('ingredients')
-    //                 ->label('Ingredients')
-    //                 ->multiple()
-    //                 ->options(options: ingredients::all()->pluck('name', 'id'))
-    //                 ->searchable()
-    //                 ->required(),
-    //             Forms\Components\FileUpload::make('image')
-    //                 ->image()
-    //                 ->disk('public')
-    //                 ->preserveFilenames()
-    //                 ->required(),
-    //         ]);
-    // }
 
     public static function table(Table $table): Table
     {
@@ -79,7 +42,6 @@ class MenuResource extends Resource
                 Tables\Columns\TextColumn::make('intruction')
                     ->label('Instruksi')    
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
@@ -89,7 +51,7 @@ class MenuResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
                     ->label('Kesulitan')
-                    ->sortable(),   
+                    ->sortable(), 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -103,14 +65,15 @@ class MenuResource extends Resource
                 //
             ])
             ->actions([
-                //Tables\Actions\EditAction::make(),
+                //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    //Tables\Actions\DeleteBulkAction::make(),
+                    //
                 ]),
             ]);
     }
+    
 
     public static function getRelations(): array
     {
@@ -123,8 +86,8 @@ class MenuResource extends Resource
     {
         return [
             'index' => Pages\ListMenus::route('/'),
-            'create' => Pages\CreateMenu::route('/create'),
-            'edit' => Pages\EditMenu::route('/{record}/edit'),
+            //'create' => Pages\CreateMenu::route('/create'),
+            //'edit' => Pages\EditMenu::route('/{record}/edit'),
         ];
     }
 }

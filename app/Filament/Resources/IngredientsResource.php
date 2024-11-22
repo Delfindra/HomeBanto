@@ -43,7 +43,7 @@ class IngredientsResource extends Resource
             ->schema([
                 Forms\Components\Hidden::make('users_id')
                     ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
-                    ->required(),
+                    ->required(), 
 
                 Forms\Components\Select::make('name')
                     ->required()
