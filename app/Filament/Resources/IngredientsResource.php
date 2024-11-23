@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\IngredientsResource\Pages;
 use App\Models\Ingredients;
 use App\Models\User;
+use App\Models\MasterData;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,23 +15,35 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\MasterData;
 use App\Notifications\FoodExpirationNotification;
 
 
-class IngredientsResource extends Resource
+class IngredientsResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Ingredients::class;
 
     protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-3.svg';
 
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
-    
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
+
     public static function getLabel(): string
     {
         return 'Inventaris Kulkas';
     }
-    
+
 
     public static function getEloquentQuery(): Builder
     {
@@ -42,8 +56,8 @@ class IngredientsResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Hidden::make('users_id')
-                    ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
-                    ->required(), 
+                    ->default(fn() => Auth::id()) // Set default ID pengguna yang sedang login
+                    ->required(),
 
                 Forms\Components\Select::make('name')
                     ->required()
@@ -76,14 +90,14 @@ class IngredientsResource extends Resource
                         'seasonings' => 'Seasonings',
                     ])
                     ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
+                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
                     ->placeholder('Enter quantity')
-                    ->suffix(fn ($get) => match ($get('category')) {
-                        'fruit' => 'kg',
+                    ->suffix(fn($get) => match ($get('category')) {
+                        'fruit' => 'pcs',
                         'vegetable' => 'kg',
                         'livestock' => 'kg',
                         'snack' => 'pack',
@@ -93,8 +107,6 @@ class IngredientsResource extends Resource
                         'seafood' => 'gr',
                         'seasonings' => 'gr',
                         'meat' => 'kg',
-                        'beverage' => 'liters',
-                        'seasonings' => 'g',           
                         'beverage' => 'liters',
                         'seasonings' => 'g',
                         default => 'units',
@@ -110,7 +122,7 @@ class IngredientsResource extends Resource
                     ->label('Expiry Date')
                     ->after('purchase_date')
                     ->placeholder('Enter expiry date'),
-                
+
 
             ]);
     }
@@ -121,7 +133,7 @@ class IngredientsResource extends Resource
             ->columns([
 
                 Tables\Columns\ImageColumn::make('ingredient_image')  // Custom column name
-                    ->label('Image')
+                ->label('Image')
                     ->getStateUsing(function ($record) {
                         // Get the image URL from the MasterData model based on the ingredient name
                         $ingredient = MasterData::where('name', $record->name)->first();
@@ -198,14 +210,14 @@ class IngredientsResource extends Resource
                         }
                     })
                     ->sortable()
-                    ->searchable(),
-                
+                    ->searchable()
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->label('Edit') ,
+                    ->label('Edit'),
                 Tables\Actions\DeleteAction::make()
-                    ->label('Hapus')              
+                    ->label('Hapus')
                     ->modalHeading('Hapus Bahan')
                     ->modalSubheading('Apakah anda yakin ingin menghapus bahan?'),
             ])
@@ -213,7 +225,6 @@ class IngredientsResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
     public static function getRelations(): array
     {
         return [];

@@ -5,21 +5,33 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DietResource\Pages;
 use App\Filament\Resources\DietResource\RelationManagers;
 use App\Models\Diet;
-use App\Models\DietIngredient;
-use App\Models\MasterData;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class DietResource extends Resource
+class DietResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Diet::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Admin';
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
 
     public static function form(Form $form): Form
     {

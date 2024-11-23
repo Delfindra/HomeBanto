@@ -3,9 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Models\Menu;
 use App\Models\Ingredients;
-use App\Models\recipes;
+use App\Models\Menu;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Models\allergies;
 use App\Models\MasterData;
 use Filament\Resources\Resource;
@@ -13,7 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
-class MenuResource extends Resource
+class MenuResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Menu::class;
 
@@ -21,7 +21,19 @@ class MenuResource extends Resource
 
     protected static ?string $navigationLabel = 'Rekomendasi Menu';
 
-    
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
 
     public static function canCreate(): bool
     {
@@ -81,7 +93,7 @@ class MenuResource extends Resource
                     ->height(70)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Menu')    
+                    ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
@@ -107,7 +119,6 @@ class MenuResource extends Resource
 
             
     }
-    
     
     public static function getRelations(): array
     {
