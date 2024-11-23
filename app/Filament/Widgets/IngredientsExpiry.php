@@ -27,8 +27,7 @@ class IngredientsExpiry extends BaseWidget
             ->query(
                 Ingredients::where('users_id', $user->id)
                     ->whereDate('expiry_date', '>=', now()->startOfDay())
-                    ->whereDate('expiry_date', '<=', now()->addDays(7)->endOfDay())
-            )
+                    ->whereDate('expiry_date', '<=', now()->addDays(7)->endOfDay()))
             ->columns([
                 TextColumn::make('No.')
                     ->getStateUsing(static function ($record, $rowLoop): string {
