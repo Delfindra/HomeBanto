@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Menu extends Model
 {
-    protected $guarded = [
-        'id',
+    use HasFactory;
+
+    protected $fillable = [
+        'name', 'description', 'intruction', 'cooking_time', 'diffcutly_level', 'image',
     ];
 
-    protected $casts = [
-        'ingredient' => 'array', // field ingredient JSON/LONGTEXT
+    protected $guarded = [
+        'id',
     ];
 
     // public function ingredients()
