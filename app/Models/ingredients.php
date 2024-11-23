@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class ingredients extends Model
+class Ingredients extends Model
 {
     protected $table = 'ingredients';
 
