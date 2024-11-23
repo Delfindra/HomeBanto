@@ -42,6 +42,19 @@ class MasterDataResource extends Resource implements HasShieldPermissions
         return static::getModel()::count();
     }
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

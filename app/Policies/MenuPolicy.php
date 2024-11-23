@@ -15,7 +15,7 @@ class MenuPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_recipe');
+        return $user->can('view_any_menu');
     }
 
     /**
@@ -23,7 +23,7 @@ class MenuPolicy
      */
     public function view(User $user, Menu $menu): bool
     {
-        return $user->can('view_recipe');
+        return $user->can('view_menu');
     }
 
     /**
@@ -31,7 +31,7 @@ class MenuPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_recipe');
+        return $user->can('create_menu');
     }
 
     /**
@@ -39,7 +39,7 @@ class MenuPolicy
      */
     public function update(User $user, Menu $menu): bool
     {
-        return $user->can('update_recipe');
+        return $user->can('update_menu');
     }
 
     /**
@@ -47,7 +47,7 @@ class MenuPolicy
      */
     public function delete(User $user, Menu $menu): bool
     {
-        return $user->can('delete_recipe');
+        return $user->can('delete_menu');
     }
 
     /**
@@ -55,7 +55,7 @@ class MenuPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_recipe');
+        return $user->can('delete_any_menu');
     }
 
     /**
