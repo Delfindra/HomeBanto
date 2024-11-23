@@ -12,6 +12,7 @@ class Ingredients extends Model
     protected $fillable = [
         'users_id',
         'name',
+        'category',
         'quantity',
         'purchase_date',
         'expiry_date',  
@@ -30,28 +31,11 @@ class Ingredients extends Model
         return $this->belongsToMany(recipes::class, 'ingredient_recipe', 'ingredient_id', 'recipe_id');
     }
 
-    // Update the status when fetching ingredients
-    public static function boot()
-    {
-        parent::boot();
-
-        // Listen for saving event
-        static::saving(function ($ingredient) {
-            $expiryDate = Carbon::parse($ingredient->expiry_date);
-            $currentDate = Carbon::now();
-
-            $daysLeft = $expiryDate->diffInDays($currentDate, false);
-
-            // Update the status based on the expiry date
-            if ($expiryDate->lt($currentDate)) {
-                $ingredient->status = 'Expired (' . abs(intval($daysLeft)) . ' days ago)';
-            } elseif ($expiryDate->lte($currentDate->addDays(7))) {
-                $ingredient->status = 'Nearly Expired (' . abs(intval($daysLeft)) . ' days left)';
-            } else {
-                $ingredient->status = 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
-            }
-        });
-    }
+        // Update the status when fetching ingredients
+    /**
+     * Summary of boot
+     * @return void
+     */
 
     // Update the status when fetching ingredients
     public static function boot()
@@ -75,6 +59,7 @@ class Ingredients extends Model
             }
         });
     }
+
 
     public function scopeIncomes($query)
     {
