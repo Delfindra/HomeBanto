@@ -66,36 +66,11 @@ class AdminPanelProvider extends PanelProvider
                     ->setNavigationLabel('My Profile')
                     ->setIcon('heroicon-o-user')
                     ->setSort(-1)
+                    ->setNavigationGroup('Settings')
                     ->customProfileComponents([
                         CustomProfileComponent::class,
                     ]),
             ])
-//            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
-//                return $builder->groups([
-//                    NavigationGroup::make()
-//                        ->items([
-//                            NavigationItem::make('Dashboard')
-//                                ->icon('heroicon-o-home')
-//                                ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.dashboard'))
-//                                ->url(fn(): string => Dashboard::getUrl()),
-//                        ]),
-//                    NavigationGroup::make('Admin')
-//                        ->items([
-//                            ...DietResource::getNavigationItems(),
-//                            ...IngredientsResource::getNavigationItems(),
-//                            ...UserResource::getNavigationItems(),
-//                            ...MasterDataResource::getNavigationItems(),
-//
-//                        ]),
-//                    NavigationGroup::make('Setting')
-//                        ->items([
-//                            NavigationItem::make('My Profile')
-//                                ->icon('heroicon-o-user')
-//                                ->url(fn(): string => EditProfilePage::getUrl())
-//                                ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.my-profile')),
-//                        ])
-//                ]);
-//            })
             ->authMiddleware([
                 Authenticate::class,
             ]);
