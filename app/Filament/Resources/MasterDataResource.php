@@ -20,9 +20,9 @@ class MasterDataResource extends Resource implements HasShieldPermissions
 
     protected static ?string $navigationGroup = 'Admin';
 
-    protected static ?string $modelLabel = 'Database Bahan';
+    protected static ?string $modelLabel = 'Ingredient Datas';
 
-    protected static ?string $navigationLabel = 'Database Bahan';
+    protected static ?string $navigationLabel = 'Ingredient Datas';
 
     public static function getPermissionPrefixes(): array
     {
@@ -69,13 +69,8 @@ class MasterDataResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar')
-                    ->width(50)
-                    ->height(50)
-                    ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Bahan')
+                    ->label('Ingredient')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category')
                     ->label('category')
@@ -94,7 +89,6 @@ class MasterDataResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-
 class Menu extends Model
 {
     use HasFactory;
 
-    protected $table = 'recipes';
-
     protected $fillable = [
-        'name', 'description', 'instruction', 'dificulty_level', 'image', 'cooking_time', 'ingredient',
+        'name', 'description', 'intruction', 'cooking_time', 'diffcutly_level', 'image',
     ];
 
-    protected $casts = [
-        'ingredient' => 'array', // field ingredient JSON/LONGTEXT
+    protected $guarded = [
+        'id',
     ];
 
     // public function ingredients()
