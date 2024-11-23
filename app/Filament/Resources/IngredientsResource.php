@@ -119,9 +119,24 @@ class IngredientsResource extends Resource
                     ->date(),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
-                    ->sortable()
-                    ->searchable()
+    ->label('Status')
+    ->sortable()
+    ->searchable()
+
+    ->formatStateUsing(function ($record) {
+        $expiryDate = \Carbon\Carbon::parse($record->expiry_date);
+        $currentDate = \Carbon\Carbon::now();
+        $daysLeft = $expiryDate->diffInDays($currentDate, false);
+
+        if ($expiryDate->lt($currentDate)) {
+            return 'Expired (' . abs(intval($daysLeft)) . ' days ago)';
+        } elseif ($expiryDate->lte($currentDate->addDays(7))) {
+            return 'Nearly Expired (' . abs(intval($daysLeft)) . ' days left)';
+        } else {
+            return 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
+        }
+    }),
+
                 
             ])
             ->actions([
