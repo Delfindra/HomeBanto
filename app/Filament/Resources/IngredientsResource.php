@@ -181,24 +181,24 @@ class IngredientsResource extends Resource
                     ->date(),
 
                 Tables\Columns\TextColumn::make('status')
-    ->label('Status')
-    ->sortable()
-    ->searchable()
-
-    ->formatStateUsing(function ($record) {
-        $expiryDate = Carbon::parse($record->expiry_date);
-        $currentDate = Carbon::now();
-        $daysLeft = $expiryDate->diffInDays($currentDate, false);
-
-        if ($expiryDate->lt($currentDate)) {
-            return 'Expired (' . abs(intval($daysLeft)) . ' days ago)';
-        } elseif ($expiryDate->lte($currentDate->addDays(7))) {
-            return 'Nearly Expired (' . abs(intval($daysLeft)) . ' days left)';
-        } else {
-            return 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
-        }
-    }),
-
+                    ->label('Status')
+                    ->getStateUsing(function ($record) {
+                        $currentDate = Carbon::now();
+                        $expiryDate = Carbon::parse($record->expiry_date);
+                        $daysLeft = intval($currentDate->diffInDays($expiryDate, false)); // Cast to integer
+                
+                        if ($daysLeft > 3) {
+                            return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left') . " (Fresh)";
+                        } elseif ($daysLeft > 0) {
+                            return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left') . " (Nearly Expired)";
+                        } elseif ($daysLeft === 0) {
+                            return "Expires today (Nearly Expired)";
+                        } else {
+                            return "Expired (" . abs($daysLeft) . " " . (abs($daysLeft) === 1 ? 'day ago' : 'days ago') . ")";
+                        }
+                    })
+                    ->sortable()
+                    ->searchable(),
                 
             ])
             ->actions([

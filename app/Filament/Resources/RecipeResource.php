@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
+use App\Models\Ingredients;
 use App\Models\recipes;
 use App\Models\MasterData;
 use Filament\Forms;
@@ -108,9 +109,6 @@ class RecipeResource extends Resource
                 //     ->dateTime()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

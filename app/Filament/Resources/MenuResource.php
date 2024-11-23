@@ -9,6 +9,7 @@ use App\Models\Menu;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 
 class MenuResource extends Resource
@@ -46,37 +47,16 @@ class MenuResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Bahan')
-                    ->formatStateUsing(fn($state) => nl2br(str_replace(',', "\n", $state)))
+                    
                     ->html()
                     ->searchable(),
             ])
             ->filters([
-                // Example of how to filter ingredients based on availability in the Ingredients table
-                Tables\Filters\SelectFilter::make('ingredient')
-                    ->label('Available Ingredients')
-                    ->options(function () {
-                        return Ingredients::all()->pluck('name', 'id')->toArray();
-                    })
-                    ->query(function (Builder $query) {
-                        // Fetch the list of available ingredients
-                        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
-    
-                        // Get the selected ingredient value from the request
-                        $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
-    
-                        // If a specific ingredient is selected, filter by that ingredient
-                        if ($selectedIngredient) {
-                            return $query->whereJsonContains('ingredient', $selectedIngredient);
-                        }
-    
-                        // If no ingredient is selected, filter by any available ingredient
-                        return $query->where(function ($query) use ($availableIngredients) {
-                            foreach ($availableIngredients as $ingredient) {
-                                // Check if the recipe's ingredient JSON contains any of the available ingredients
-                                $query->orWhereJsonContains('ingredient', $ingredient);
-                            }
-                        });
-                    }),
+                SelectFilter::make('ingredient')
+                    ->label('Filter Ingredients')
+                    ->options(
+                        Ingredients::pluck('name', 'name')->toArray() // Assuming you have a separate Ingredients model
+                    ),
             ])
             ->actions([
                 //Tables\Actions\ViewAction::make(),
