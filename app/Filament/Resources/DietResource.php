@@ -40,10 +40,9 @@ class DietResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\TextInput::make('description')
                     ->required()
-                    ->rows(10)
-                    ->cols(20),
+                    ->maxLength(255),
             ]);
     }
 
@@ -54,8 +53,6 @@ class DietResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->wrap()
-                    ->limit(1000)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dietIngredients.name')
                     ->default('Edit to add ingredients -->')

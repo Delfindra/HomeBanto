@@ -42,6 +42,38 @@ class MenuResource extends Resource implements HasShieldPermissions
         return false;
     }
 
+
+    // public static function form(Form $form): Form
+    // {
+    //     return $form
+    //         ->schema([
+    //             Forms\Components\TextInput::make('name')
+    //                 ->required(),
+    //             Forms\Components\TextInput::make('description')
+    //                 ->required(),
+    //             Forms\Components\Textarea::make('intruction')
+    //                 ->required()
+    //                 ->rows(10)
+    //                 ->cols(20),
+    //             Forms\Components\TextInput::make('cooking_time')
+    //                 ->required()
+    //                 ->numeric(),
+    //             Forms\Components\TextInput::make('diffcutly_level')
+    //                 ->required(),
+    //             Forms\Components\Select::make('ingredients')
+    //                 ->label('Ingredients')
+    //                 ->multiple()
+    //                 ->options(options: ingredients::all()->pluck('name', 'id'))
+    //                 ->searchable()
+    //                 ->required(),
+    //             Forms\Components\FileUpload::make('image')
+    //                 ->image()
+    //                 ->disk('public')
+    //                 ->preserveFilenames()
+    //                 ->required(),
+    //         ]);
+    // }
+
     public static function table(Table $table): Table
     {
         $availableIngredients = Ingredients::all()->pluck('name')->toArray();
@@ -91,14 +123,19 @@ class MenuResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(width: 70)
-                    ->height(70)
+                    ->width(200)
+                    ->height(200)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('intruction')
+                    ->label('Instruksi')    
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250)
@@ -113,10 +150,12 @@ class MenuResource extends Resource implements HasShieldPermissions
                 //
             ])
             ->actions([
-                //Tables\Actions\ViewAction::make(),
+                //Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                //
+                Tables\Actions\BulkActionGroup::make([
+                    //Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
 
             
@@ -133,6 +172,8 @@ class MenuResource extends Resource implements HasShieldPermissions
     {
         return [
             'index' => Pages\ListMenus::route('/'),
+            //'create' => Pages\CreateMenu::route('/create'),
+            //'edit' => Pages\EditMenu::route('/{record}/edit'),
         ];
     }
 }
