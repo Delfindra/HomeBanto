@@ -89,6 +89,7 @@ class Ingredients extends Model
         return $query->where('type', 'expense'); // Ganti 'type' sesuai kolom yang relevan
     }
 
+
     public function scopeIncomes($query)
     {
         return $query->where('type', 'income'); // Ganti 'type' sesuai kolom yang relevan
