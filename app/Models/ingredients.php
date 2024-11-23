@@ -38,20 +38,27 @@ class ingredients extends Model
     {
         parent::boot();
 
-        // Listen for saving event
+        // Listen for the saving event
         static::saving(function ($ingredient) {
+            // Parse expiry_date and get current date
             $expiryDate = Carbon::parse($ingredient->expiry_date);
             $currentDate = Carbon::now();
 
-            $daysLeft = $expiryDate->diffInDays($currentDate, false);
+            // Calculate days left until expiry
+            $daysLeft = $currentDate->diffInDays($expiryDate, false);
+
+            $daysLeft = (int) $daysLeft;
 
             // Update the status based on the expiry date
-            if ($expiryDate->lt($currentDate)) {
-                $ingredient->status = 'Expired (' . abs(intval($daysLeft)) . ' days ago)';
-            } elseif ($expiryDate->lte($currentDate->addDays(7))) {
-                $ingredient->status = 'Nearly Expired (' . abs(intval($daysLeft)) . ' days left)';
+            if ($daysLeft < 1) {
+                // Expired if daysLeft is negative
+                $ingredient->status = 'Expired (' . abs($daysLeft) . ' days ago)';
+            } elseif ($daysLeft <= 3) {
+                // Nearly expired if 0 to 7 days left
+                $ingredient->status = 'Nearly Expired (' . $daysLeft . ' days left)';
             } else {
-                $ingredient->status = 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
+                // Fresh if more than 7 days left
+                $ingredient->status = 'Fresh (' . $daysLeft . ' days left)';
             }
         });
     }
