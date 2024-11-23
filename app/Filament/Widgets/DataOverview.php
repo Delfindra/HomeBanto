@@ -21,10 +21,11 @@ class DataOverview extends BaseWidget
         $ingredientsStock = Ingredients::where('users_id', $user->id)
             ->where('quantity', '<=', 5)
             ->count();
+
         return [
             Stat::make('Ingredients Item', $ingredientsCount),
-            Stat::make('Low Stock Ingredients', $ingredientsStock),
             Stat::make('Ingredients Near Expiry', $ingredientsExpiry),
+            Stat::make('Low Stock Ingredients', $ingredientsStock),
         ];
     }
 }
