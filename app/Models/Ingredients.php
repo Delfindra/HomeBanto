@@ -9,16 +9,8 @@ class Ingredients extends Model
 {
     protected $table = 'ingredients';
 
-    protected $fillable = [
-        'users_id',
-        'name',
-        'quantity',
-        'status',
-        'category',
-        'purchase_date',
-        'expiry_date',  
-        'created_at',
-        'updated_at',
+    protected $guarded = [
+        'id'
     ];
 
     public function user()
@@ -83,5 +75,16 @@ class Ingredients extends Model
                 $ingredient->status = 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
             }
         });
+    }
+
+    public function scopeIncomes($query)
+    {
+        return $query->where('type', 'income'); // Ganti 'type' sesuai kolom yang relevan
+    }
+
+    // Scope for expenses (optional)
+    public function scopeExpenses($query)
+    {
+        return $query->where('type', 'expense'); // Ganti 'type' sesuai kolom yang relevan
     }
 }
