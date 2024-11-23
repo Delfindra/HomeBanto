@@ -60,7 +60,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Forms\Components\Hidden::make('users_id')
-                    ->default(fn() => Auth::id()) // Set default ID pengguna yang sedang login
+                    ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
                     ->required(),
 
                 Forms\Components\Select::make('name')
@@ -149,17 +149,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-
-                Tables\Columns\ImageColumn::make('ingredient_image')  // Custom column name
-                ->label('Image')
-                    ->getStateUsing(function ($record) {
-                        // Get the image URL from the MasterData model based on the ingredient name
-                        $ingredient = MasterData::where('name', $record->name)->first();
-                        return $ingredient ? $ingredient->image : null;  // Fetch image from 'image' field
-                    })
-                    ->width(50)
-                    ->height(50),
-
                 Tables\Columns\TextColumn::make('name')
                     ->label('Ingredient Name')
                     ->searchable(),
