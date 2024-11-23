@@ -77,6 +77,7 @@ class Ingredients extends Model
         });
     }
 
+
     public function scopeIncomes($query)
     {
         return $query->where('type', 'income'); // Ganti 'type' sesuai kolom yang relevan
