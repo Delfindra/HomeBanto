@@ -7,12 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Menu extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'name', 'description', 'intruction', 'cooking_time', 'diffcutly_level', 'image',
-    ];
-
     protected $guarded = [
         'id',
     ];
