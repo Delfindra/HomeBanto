@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Notifications\FoodExpirationNotification;
 
-
 class IngredientsResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Ingredients::class;
@@ -91,6 +90,23 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ])
                     ->reactive() // Makes the form field react to changes
                     ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
+
+                Forms\Components\Select::make('category')
+                    ->required()
+                    ->label('Food Category')
+                    ->options([
+                        'fruit' => 'Fruit',
+                        'vegetable' => 'Vegetable',
+                        'livestock' => 'Livestock',
+                        'snack' => 'Snack',
+                        'beverage' => 'Beverage',
+                        'dry_food' => 'Dry Food',
+                        'staple_food' => 'Staple Food',
+                        'seafood' => 'Seafood',
+                        'seasonings' => 'Seasonings',
+                    ])
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
@@ -211,7 +227,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     })
                     ->sortable()
                     ->searchable()
-
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
