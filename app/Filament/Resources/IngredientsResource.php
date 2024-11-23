@@ -58,7 +58,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Forms\Components\Hidden::make('users_id')
-                    ->default(fn() => Auth::id())
+                    ->default(fn() => Auth::id()) // Set default ID pengguna yang sedang login
                     ->required(),
 
                 Forms\Components\Select::make('name')
@@ -82,8 +82,8 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'seafood' => 'Seafood',
                         'seasonings' => 'Seasonings',
                     ])
-                    ->reactive()
-                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)),
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
@@ -93,7 +93,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'fruit' => 'pcs',
                         'vegetable' => 'kg',
                         'beverage' => 'liters',
-                        'seasonings' => 'g',
                         'seasonings' => 'g',
                         default => 'units',
                     }),
@@ -110,8 +109,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->placeholder('Enter expiry date'),
 
 
-                
-
             ]);
     }
 
@@ -119,8 +116,30 @@ class IngredientsResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
+
+                Tables\Columns\ImageColumn::make('ingredient_image')  // Custom column name
+                ->label('Image')
+                    ->getStateUsing(function ($record) {
+                        // Get the image URL from the MasterData model based on the ingredient name
+                        $ingredient = MasterData::where('name', $record->name)->first();
+                        return $ingredient ? $ingredient->image : null;  // Fetch image from 'image' field
+                    })
+                    ->width(50)
+                    ->height(50),
+
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Bahan'),
+                    ->label('Ingredient Name'),
+
+                Tables\Columns\TextColumn::make('quantity')
+                    ->label('Quantity')
+                    ->formatStateUsing(fn($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' pcs',
+                        'vegetable' => $record->quantity . ' kg',
+                        'beverage' => $record->quantity . ' liters',
+                        'seasonings' => $record->quantity . ' g',
+                        'meat' => $record->quantity . ' kg',
+                        default => $record->quantity . ' units',
+                    }),
 
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('Tanggal Pembelian')
@@ -163,7 +182,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'secondary' => static fn($record) => now()->diffInDays($record->expiry_date, false) < 0,
                     ])
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
 
             ])
             ->actions([
@@ -178,6 +197,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
     public static function getRelations(): array
     {
         return [];

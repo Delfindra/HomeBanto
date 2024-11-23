@@ -5,8 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MenuResource\Pages;
 use App\Models\Ingredients;
 use App\Models\Menu;
-use App\Models\recipes;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use App\Models\recipes;
 use App\Models\allergies;
 use App\Models\MasterData;
 use Filament\Resources\Resource;
@@ -148,7 +148,32 @@ class MenuResource extends Resource implements HasShieldPermissions
                     ->searchable(),
             ])
             ->filters([
-                //
+                // Example of how to filter ingredients based on availability in the Ingredients table
+                Tables\Filters\SelectFilter::make('ingredient')
+                    ->label('Available Ingredients')
+                    ->options(function () {
+                        return Ingredients::all()->pluck('name', 'id')->toArray();
+                    })
+                    ->query(function (Builder $query) {
+                        // Fetch the list of available ingredients
+                        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
+
+                        // Get the selected ingredient value from the request
+                        $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
+
+                        // If a specific ingredient is selected, filter by that ingredient
+                        if ($selectedIngredient) {
+                            return $query->whereJsonContains('ingredient', $selectedIngredient);
+                        }
+
+                        // If no ingredient is selected, filter by any available ingredient
+                        return $query->where(function ($query) use ($availableIngredients) {
+                            foreach ($availableIngredients as $ingredient) {
+                                // Check if the recipe's ingredient JSON contains any of the available ingredients
+                                $query->orWhereJsonContains('ingredient', $ingredient);
+                            }
+                        });
+                    }),
             ])
             ->actions([
                 //Tables\Actions\EditAction::make(),
@@ -161,7 +186,7 @@ class MenuResource extends Resource implements HasShieldPermissions
 
             
     }
-    
+
     public static function getRelations(): array
     {
         return [
