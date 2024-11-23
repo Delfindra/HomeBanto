@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\IngredientsResource\Pages;
 use App\Models\Ingredients;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -11,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Models\MasterData;
+use App\Notifications\FoodExpirationNotification;
 
 class IngredientsResource extends Resource
 {
@@ -32,15 +36,38 @@ class IngredientsResource extends Resource
                     ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
                     ->required(),
 
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('name')
                     ->required()
                     ->label('Ingredient Name')
-                    ->placeholder('Enter ingredient name'),
+                    ->options(MasterData::pluck('name', 'name')) // Mengambil nama sebagai nilai dan id sebagai kunci
+                    ->searchable() // Opsional: Membuat dropdown dapat dicari
+                    ->placeholder('Select ingredient name'),
+
+                Forms\Components\Select::make('category')
+                    ->required()
+                    ->label('Food Category')
+                    ->options(MasterData::pluck('category', 'category')) // Mengambil nama sebagai nilai
+                    ->searchable() // Opsional: Membuat dropdown dapat dicari
+                    ->placeholder('Select category')
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
-                    ->placeholder('Enter quantity'),
+                    ->placeholder('Enter quantity')
+                    ->suffix(fn ($get) => match ($get('category')) {
+                        'fruit' => 'kg',
+                        'vegetable' => 'kg',
+                        'livestock' => 'kg',
+                        'snack' => 'pack',
+                        'beverage' => 'liters',
+                        'dry_food' => 'kg',
+                        'staple_food' => 'kg',
+                        'seafood' => 'gr',
+                        'seasonings' => 'gr',
+                        default => 'units',
+                    }),
 
                 Forms\Components\DatePicker::make('purchase_date')
                     ->required()
@@ -60,18 +87,47 @@ class IngredientsResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Ingredient Name'),
+                    ->label('Ingredient Name')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('category')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Food Category'),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Quantity'),
+                    ->searchable()
+                    ->label('Quantity')
+                    ->formatStateUsing(fn ($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' kg',
+                        'vegetable' => $record->quantity . ' kg',
+                        'livestock' => $record->quantity . ' kg',
+                        'snack' =>  $record->quantity .' pack',
+                        'beverage' => $record->quantity . ' liters',
+                        'dry_food' => $record->quantity .' kg',
+                        'staple_food' => $record->quantity .' kg',
+                        'seafood' => $record->quantity .' gr',
+                        'seasonings' => $record->quantity . ' gr',
+                        default => $record->quantity .' units',
+                    }),
 
                 Tables\Columns\TextColumn::make('purchase_date')
+                    ->sortable()
+                    ->searchable()
                     ->label('Purchase Date')
                     ->date(),
 
                 Tables\Columns\TextColumn::make('expiry_date')
+                    ->sortable()
+                    ->searchable()
                     ->label('Expiry Date')
                     ->date(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->searchable()
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -80,7 +136,7 @@ class IngredientsResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
     public static function getRelations(): array
     {
         return [];
