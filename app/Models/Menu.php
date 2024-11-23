@@ -11,6 +11,10 @@ class Menu extends Model
         'id',
     ];
 
+    protected $casts = [
+        'ingredient' => 'array', // field ingredient JSON/LONGTEXT
+    ];
+
     // public function ingredients()
     // {
     //     return $this->belongsToMany(Ingredients::class, 'ingredient_recipe', 'recipe_id', 'ingredient_id');
