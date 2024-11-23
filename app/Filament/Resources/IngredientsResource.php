@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+
 
 class IngredientsResource extends Resource
 {
@@ -66,9 +68,34 @@ class IngredientsResource extends Resource
                     ->reactive() // Makes the form field react to changes
                     ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
+                Forms\Components\Select::make('category')
+                    ->required()
+                    ->label('Food Category')
+                    ->options([
+                        'fruit' => 'Fruit',
+                        'vegetable' => 'Vegetable',
+                        'livestock' => 'Livestock',
+                        'snack' => 'Snack',
+                        'beverage' => 'Beverage',
+                        'dry_food' => 'Dry Food',
+                        'staple_food' => 'Staple Food',
+                        'seafood' => 'Seafood',
+                        'seasonings' => 'Seasonings',
+                    ])
+                    ->reactive() // Makes the form field react to changes
+                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
+
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
+                    ->placeholder('Enter quantity')
+                    ->suffix(fn ($get) => match ($get('category')) {
+                        'fruit' => 'pcs',
+                        'vegetable' => 'kg',
+                        'beverage' => 'liters',
+                        'seasonings' => 'g',
+                        default => 'units',
+                    }),
                     ->placeholder('Enter quantity')
                     ->suffix(fn ($get) => match ($get('category')) {
                         'fruit' => 'pcs',
@@ -89,6 +116,8 @@ class IngredientsResource extends Resource
                     ->label('Expiry Date')
                     ->after('purchase_date')
                     ->placeholder('Enter expiry date'),
+                
+
                 
 
             ]);
@@ -136,6 +165,12 @@ class IngredientsResource extends Resource
                     ->sortable()
                     ->searchable()
                 
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->searchable()
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -149,6 +184,7 @@ class IngredientsResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+    
     
     public static function getRelations(): array
     {

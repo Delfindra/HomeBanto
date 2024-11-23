@@ -12,11 +12,11 @@ class Ingredients extends Model
     protected $fillable = [
         'users_id',
         'name',
-        'expiry_date',
-        'purchase_date',
         'quantity',
-        'status',
-        'category',
+        'purchase_date',
+        'expiry_date',  
+        'created_at',
+        'updated_at',
     ];
 
     public function user()
@@ -51,5 +51,39 @@ class Ingredients extends Model
                 $ingredient->status = 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
             }
         });
+    }
+
+    // Update the status when fetching ingredients
+    public static function boot()
+    {
+        parent::boot();
+
+        // Listen for saving event
+        static::saving(function ($ingredient) {
+            $expiryDate = Carbon::parse($ingredient->expiry_date);
+            $currentDate = Carbon::now();
+
+            $daysLeft = $expiryDate->diffInDays($currentDate, false);
+
+            // Update the status based on the expiry date
+            if ($expiryDate->lt($currentDate)) {
+                $ingredient->status = 'Expired (' . abs(intval($daysLeft)) . ' days ago)';
+            } elseif ($expiryDate->lte($currentDate->addDays(7))) {
+                $ingredient->status = 'Nearly Expired (' . abs(intval($daysLeft)) . ' days left)';
+            } else {
+                $ingredient->status = 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
+            }
+        });
+    }
+
+    public function scopeIncomes($query)
+    {
+        return $query->where('type', 'income'); // Ganti 'type' sesuai kolom yang relevan
+    }
+
+    // Scope for expenses (optional)
+    public function scopeExpenses($query)
+    {
+        return $query->where('type', 'expense'); // Ganti 'type' sesuai kolom yang relevan
     }
 }
