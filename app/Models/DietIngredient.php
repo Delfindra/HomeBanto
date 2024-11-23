@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DietIngredient extends Model
 {
-    use HasFactory;
-
     protected $guarded = [
         'id'
     ];

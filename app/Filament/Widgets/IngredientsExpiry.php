@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class IngredientsExpiry extends BaseWidget
 {
-    protected static ?string $heading = 'Ingredients Expiry Summary';
+    protected static ?string $heading = 'Ingredients Near Expiry';
 
     public function getTableRecordKey($record): string
     {
@@ -34,7 +34,8 @@ class IngredientsExpiry extends BaseWidget
                     }),
                 TextColumn::make('expiry_date')
                     ->date('d M Y'),
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                ->searchable(),
                 TextColumn::make('status')
                     ->getStateUsing(static function ($record): string {
                         $daysLeft = intval(now()->diffInDays($record->expiry_date, false));

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Diet extends Model
 {
-    use HasFactory;
     protected $guarded = [
         'id',
     ];
