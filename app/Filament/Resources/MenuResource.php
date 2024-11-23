@@ -3,14 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Models\recipes;
-use App\Models\Ingredients;
 use App\Models\Menu;
+use App\Models\Ingredients;
+use App\Models\recipes;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
 
 class MenuResource extends Resource
 {
@@ -29,7 +27,17 @@ class MenuResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
+
+        $query = recipes::query();
+
+        // Add conditions for each available ingredient
+        foreach ($availableIngredients as $ingredient) {
+            $query->orWhere('ingredient', 'like', '%' . $ingredient . '%');
+        }
+
         return $table
+            ->query($query)
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
@@ -52,11 +60,7 @@ class MenuResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                SelectFilter::make('ingredient')
-                    ->label('Filter Ingredients')
-                    ->options(
-                        Ingredients::pluck('name', 'name')->toArray() // Assuming you have a separate Ingredients model
-                    ),
+                //
             ])
             ->actions([
                 //Tables\Actions\ViewAction::make(),
