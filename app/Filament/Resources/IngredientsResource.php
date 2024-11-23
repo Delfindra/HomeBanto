@@ -142,10 +142,12 @@ class IngredientsResource extends Resource
                         $expiryDate = Carbon::parse($record->expiry_date);
                         $daysLeft = intval($currentDate->diffInDays($expiryDate, false)); // Cast to integer
                 
-                        if ($daysLeft > 0) {
-                            return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left');
+                        if ($daysLeft > 3) {
+                            return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left') . " (Fresh)";
+                        } elseif ($daysLeft > 0) {
+                            return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left') . " (Nearly Expired)";
                         } elseif ($daysLeft === 0) {
-                            return "Expires today";
+                            return "Expires today (Nearly Expired)";
                         } else {
                             return "Expired (" . abs($daysLeft) . " " . (abs($daysLeft) === 1 ? 'day ago' : 'days ago') . ")";
                         }
