@@ -106,7 +106,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->required()
                     ->label('Quantity')
                     ->placeholder('Enter quantity')
-                    ->suffix(fn($get) => match ($get('category')) {
+                    ->suffix(fn ($get) => match ($get('category')) {
                         'fruit' => 'pcs',
                         'vegetable' => 'kg',
                         'beverage' => 'liters',
@@ -198,7 +198,8 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'secondary' => static fn($record) => now()->diffInDays($record->expiry_date, false) < 0,
                     ])
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
