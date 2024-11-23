@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MenuResource\Pages;
-use App\Models\recipes;
 use App\Models\MasterData;
+use App\Models\recipes;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,7 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 
 
-class RecipeResource extends Resource
+class RecipeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = recipes::class;
 
@@ -23,6 +23,19 @@ class RecipeResource extends Resource
     public static function getLabel(): string
     {
         return 'Resep';
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
     }
 
 
@@ -72,7 +85,7 @@ class RecipeResource extends Resource
                     ->height(150)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Menu')    
+                    ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
@@ -80,9 +93,9 @@ class RecipeResource extends Resource
                     ->limit(250)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('instruction')
-                    ->label('Instruksi')    
+                    ->label('Instruksi')
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
+                    ->formatStateUsing(fn($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
@@ -93,7 +106,7 @@ class RecipeResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('dificulty_level')
                     ->label('Kesulitan')
-                    ->sortable(),   
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Ingredients')
                     ->formatStateUsing(fn($state) => nl2br(str_replace(',', "\n", $state)))

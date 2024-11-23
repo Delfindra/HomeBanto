@@ -5,15 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MasterDataResource\Pages;
 use App\Filament\Resources\MasterDataResource\RelationManagers;
 use App\Models\MasterData;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class MasterDataResource extends Resource
+class MasterDataResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = MasterData::class;
 
@@ -24,6 +23,19 @@ class MasterDataResource extends Resource
     protected static ?string $modelLabel = 'Database Bahan';
 
     protected static ?string $navigationLabel = 'Database Bahan';
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
 
     public static function form(Form $form): Form
     {

@@ -3,15 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Models\recipes;
 use App\Models\Ingredients;
 use App\Models\Menu;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class MenuResource extends Resource
+class MenuResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Menu::class;
 
@@ -19,7 +19,19 @@ class MenuResource extends Resource
 
     protected static ?string $navigationLabel = 'Rekomendasi Menu';
 
-    
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
 
     public static function canCreate(): bool
     {
@@ -36,7 +48,7 @@ class MenuResource extends Resource
                     ->height(70)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Menu')    
+                    ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
@@ -60,15 +72,15 @@ class MenuResource extends Resource
                     ->query(function (Builder $query) {
                         // Fetch the list of available ingredients
                         $availableIngredients = Ingredients::all()->pluck('name')->toArray();
-    
+
                         // Get the selected ingredient value from the request
                         $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
-    
+
                         // If a specific ingredient is selected, filter by that ingredient
                         if ($selectedIngredient) {
                             return $query->whereJsonContains('ingredient', $selectedIngredient);
                         }
-    
+
                         // If no ingredient is selected, filter by any available ingredient
                         return $query->where(function ($query) use ($availableIngredients) {
                             foreach ($availableIngredients as $ingredient) {
@@ -85,7 +97,7 @@ class MenuResource extends Resource
                 //
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
