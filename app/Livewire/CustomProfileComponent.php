@@ -54,6 +54,7 @@ class CustomProfileComponent extends Component implements HasForms
                             ->default(allergies::where('user_id', $user->id
                             )->get()->pluck('masterdata_id')->toArray())
                             ->label('Allergies')
+                            ->preload()
                             ->options(MasterData::all()->pluck('name', 'id'))
                             ->searchable(),
                     ]),
