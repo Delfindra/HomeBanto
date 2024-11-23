@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class IngredientsQuantity extends BaseWidget
 {
-    protected static ?string $heading = 'Ingredients Stock Summary';
+    protected static ?string $heading = 'Low Stock Ingredients';
 
     public function getTableRecordKey($record): string
     {
