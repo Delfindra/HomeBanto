@@ -228,7 +228,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         } elseif ($daysLeft > 0) {
                             return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left') . " (Nearly Expired)";
                         } elseif ($daysLeft === 0) {
-                            return "Expires today (Nearly Expired)";
+                            return "Expires Tommorow";
                         } else {
                             return "Expired (" . abs($daysLeft) . " " . (abs($daysLeft) === 1 ? 'day ago' : 'days ago') . ")";
                         }
