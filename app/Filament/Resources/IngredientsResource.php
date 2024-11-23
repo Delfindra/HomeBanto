@@ -81,28 +81,11 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->reactive() // Makes the form field react to changes
                     ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
-                Forms\Components\Select::make('category')
-                    ->required()
-                    ->label('Food Category')
-                    ->options([
-                        'fruit' => 'Fruit',
-                        'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
-                        'snack' => 'Snack',
-                        'beverage' => 'Beverage',
-                        'dry_food' => 'Dry Food',
-                        'staple_food' => 'Staple Food',
-                        'seafood' => 'Seafood',
-                        'seasonings' => 'Seasonings',
-                    ])
-                    ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
-
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
                     ->placeholder('Enter quantity')
-                    ->suffix(fn($get) => match ($get('category')) {
+                    ->suffix(fn ($get) => match ($get('category')) {
                         'fruit' => 'pcs',
                         'vegetable' => 'kg',
                         'meat' => 'kg',
@@ -183,7 +166,8 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         }
                     })
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
