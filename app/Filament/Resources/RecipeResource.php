@@ -22,7 +22,7 @@ class RecipeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Menu::class;
 
-    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-5.svg';
+    protected static ?string $navigationIcon = 'recipe';
 
     protected static ?string $navigationLabel = 'Resep';
 
@@ -45,6 +45,10 @@ class RecipeResource extends Resource implements HasShieldPermissions
     }
 
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
