@@ -57,6 +57,17 @@ class DietResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('dietIngredients.name')
+                    ->default('Edit to add ingredients -->')
+                    ->label('Ingredients')
+                    ->getStateUsing(function (Diet $record) {
+                        $ingredients = $record->dietIngredients->pluck('masterData.name')->implode(', ');
+                        // If no ingredients, return the styled default message
+                        return $ingredients ?: '<span style="color: lightgreen;">Edit to add ingredients --></span>';
+                    })
+                    ->html()
+                    ->sortable()
+                    ->searchable(),   
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
