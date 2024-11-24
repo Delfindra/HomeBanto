@@ -91,15 +91,14 @@ class MenuResource extends Resource implements HasShieldPermissions
             ->headerActions([
                 Tables\Actions\Action::make('showAllergies')
                     ->label('Your Allergies: [ ' . $allergiesDisplay.' ]')
-                    ->color('secondary')
-                    ->url('#'), // You can customize the URL or action if needed
+                    ->color('secondary'),
             ])
             ->query($query)
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(200)
-                    ->height(200)
+                    ->width(100)
+                    ->height(100)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Menu')
@@ -107,47 +106,13 @@ class MenuResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('intruction')
-                    ->label('Instruksi')    
-                    ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
-                    ->html()
-                    ->wrap()
-                    ->limit(250)
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Bahan')
-                    
                     ->html()
                     ->searchable(),
             ])
             ->filters([
-                // Example of how to filter ingredients based on availability in the Ingredients table
-                Tables\Filters\SelectFilter::make('ingredient')
-                    ->label('Available Ingredients')
-                    ->options(function () {
-                        return Ingredients::all()->pluck('name', 'id')->toArray();
-                    })
-                    ->query(function (Builder $query) {
-                        // Fetch the list of available ingredients
-                        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
-
-                        // Get the selected ingredient value from the request
-                        $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
-
-                        // If a specific ingredient is selected, filter by that ingredient
-                        if ($selectedIngredient) {
-                            return $query->whereJsonContains('ingredient', $selectedIngredient);
-                        }
-
-                        // If no ingredient is selected, filter by any available ingredient
-                        return $query->where(function ($query) use ($availableIngredients) {
-                            foreach ($availableIngredients as $ingredient) {
-                                // Check if the recipe's ingredient JSON contains any of the available ingredients
-                                $query->orWhereJsonContains('ingredient', $ingredient);
-                            }
-                        });
-                    }),
+                //
             ])
             ->actions([
                 //Tables\Actions\EditAction::make(),
