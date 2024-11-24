@@ -74,24 +74,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->options([
                         'fruit' => 'Fruit',
                         'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
-                        'snack' => 'Snack',
-                        'beverage' => 'Beverage',
-                        'dry_food' => 'Dry Food',
-                        'staple_food' => 'Staple Food',
-                        'seafood' => 'Seafood',
-                        'seasonings' => 'Seasonings',
-                    ])
-                    ->reactive()
-                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)),
-
-                Forms\Components\Select::make('category')
-                    ->required()
-                    ->label('Food Category')
-                    ->options([
-                        'fruit' => 'Fruit',
-                        'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
+                        'meat' => 'Meat',
                         'snack' => 'Snack',
                         'beverage' => 'Beverage',
                         'dry_food' => 'Dry Food',
@@ -111,7 +94,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'vegetable' => 'kg',
                         'beverage' => 'liters',
                         'seasonings' => 'g',
-                        'seasonings' => 'g',
+                        'meat' => 'kg',
                         default => 'units',
                     }),
 
@@ -133,6 +116,18 @@ class IngredientsResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
+
+                Tables\Columns\ImageColumn::make('ingredient_image')  // Custom column name
+                    ->label('Image')
+                    ->getStateUsing(function ($record) {
+                        // Get the image URL from the MasterData model based on the ingredient name
+                        $ingredient = MasterData::where('name', $record->name)->first();
+                        return $ingredient ? $ingredient->image : null;  // Fetch image from 'image' field
+                    })
+                    ->width(50)
+                    ->height(50),
+
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Bahan'),
 
@@ -147,6 +142,14 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('quantity')
                     ->badge()
                     ->label('Stock')
+                    ->formatStateUsing(fn ($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' pcs',
+                        'vegetable' => $record->quantity . ' kg',
+                        'beverage' => $record->quantity . ' liters',
+                        'seasonings' => $record->quantity . ' g',
+                        'meat' => $record->quantity . ' kg',
+                        default => $record->quantity . ' units',
+                    })
                     ->colors([
                         'success' => static fn($record) => $record->quantity > 3,
                         'warning' => static fn($record) => $record->quantity > 0 && $record->quantity <= 3,
