@@ -58,7 +58,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Forms\Components\Hidden::make('users_id')
-                    ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
+                    ->default(fn() => Auth::id())
                     ->required(),
 
                 Forms\Components\Select::make('name')
@@ -82,8 +82,8 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'seafood' => 'Seafood',
                         'seasonings' => 'Seasonings',
                     ])
-                    ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
+                    ->reactive()
+                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)),
 
                 Forms\Components\Select::make('category')
                     ->required()
@@ -106,7 +106,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->required()
                     ->label('Quantity')
                     ->placeholder('Enter quantity')
-                    ->suffix(fn ($get) => match ($get('category')) {
+                    ->suffix(fn($get) => match ($get('category')) {
                         'fruit' => 'pcs',
                         'vegetable' => 'kg',
                         'beverage' => 'liters',
@@ -135,9 +135,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Bahan'),
-
-                Tables\Columns\TextColumn::make('quantity')
-                    ->label('Stok'),
 
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('Tanggal Pembelian')
@@ -181,7 +178,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ])
                     ->sortable()
                     ->searchable(),
-                
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -195,7 +192,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [];

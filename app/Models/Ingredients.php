@@ -9,15 +9,8 @@ class Ingredients extends Model
 {
     protected $table = 'ingredients';
 
-    protected $fillable = [
-        'users_id',
-        'name',
-        'category',
-        'quantity',
-        'purchase_date',
-        'quantity',
-        'status',
-        'category',
+    protected $guarded = [
+        'id'
     ];
 
     public function user()
