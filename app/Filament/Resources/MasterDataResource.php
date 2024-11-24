@@ -50,23 +50,6 @@ class MasterDataResource extends Resource implements HasShieldPermissions
                     ->label('Ingredient Name')
                     ->required()
                     ->maxLength(255),
-                
-                Forms\Components\Select::make('category')
-                    ->required()
-                    ->label('Food Category')
-                    ->options([
-                        'fruit' => 'Fruit',
-                        'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
-                        'snack' => 'Snack',
-                        'beverage' => 'Beverage',
-                        'dry food' => 'Dry Food',
-                        'staple_food' => 'Staple Food',
-                        'seafood' => 'Seafood',
-                        'seasonings' => 'Seasonings',
-                    ])
-                    ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)),
             ]);
     }
 
@@ -76,9 +59,6 @@ class MasterDataResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Ingredient')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('category')
-                    ->label('category')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

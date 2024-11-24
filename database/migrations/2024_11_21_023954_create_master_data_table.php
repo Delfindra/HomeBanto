@@ -22,13 +22,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        // Disable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-
-        // Drop the table
         Schema::dropIfExists('master_data');
-
-        // Re-enable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
     }
 };

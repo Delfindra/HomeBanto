@@ -73,32 +73,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                 Forms\Components\Select::make('category')
                     ->required()
                     ->label('Food Category')
-                    ->options(MasterData::pluck('category', 'category')) // Mengambil nama sebagai nilai
-                    ->searchable() // Opsional: Membuat dropdown dapat dicari
-                    ->placeholder('Select category')
-                    ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
-
-                Forms\Components\Select::make('category')
-                    ->required()
-                    ->label('Food Category')
-                    ->options([
-                        'fruit' => 'Fruit',
-                        'vegetable' => 'Vegetable',
-                        'livestock' => 'Livestock',
-                        'snack' => 'Snack',
-                        'beverage' => 'Beverage',
-                        'dry_food' => 'Dry Food',
-                        'staple_food' => 'Staple Food',
-                        'seafood' => 'Seafood',
-                        'seasonings' => 'Seasonings',
-                    ])
-                    ->reactive()
-                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)),
-
-                Forms\Components\Select::make('category')
-                    ->required()
-                    ->label('Food Category')
                     ->options([
                         'fruit' => 'Fruit',
                         'vegetable' => 'Vegetable',
