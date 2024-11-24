@@ -67,6 +67,7 @@ class MenuResource extends Resource
 
 
         return $table
+            ->heading('Recommended Recipe (Available Ingredient + Allergies)')
             ->headerActions([
                 Tables\Actions\Action::make('showAllergies')
                     ->label('Your Allergies: [ ' . $allergiesDisplay.' ]')

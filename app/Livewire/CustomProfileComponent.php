@@ -29,7 +29,16 @@ class CustomProfileComponent extends Component implements HasForms
 
     public function mount(): void
     {
-        $this->form->fill();
+
+        $user = Auth::user();
+
+        // Fetch user's current diet and allergies
+        $this->data = [
+            'diet_id' => $user->diet_id, // Assuming diet_id is saved in the User model
+            'allergies' => $user->allergies->pluck('masterdata_id')->toArray(), // Assuming relationship exists
+        ];
+
+        $this->form->fill($this->data);
     }
 
     public function form(Form $form): Form
@@ -64,14 +73,29 @@ class CustomProfileComponent extends Component implements HasForms
          */
 
         $user = Auth::user();
+
         $user->update([
             'diet_id' => $data['diet_id']
         ]);
 
-        foreach ($data['allergies'] as $allergy) {
+        // Sync allergies: remove deselected and add new ones
+        $newAllergies = $data['allergies']; // The selected allergies from the form
+        $existingAllergies = $user->allergies->pluck('masterdata_id')->toArray();
+
+        // Remove allergies not in the selected list
+        $allergiesToDelete = array_diff($existingAllergies, $newAllergies);
+        if (!empty($allergiesToDelete)) {
+            allergies::where('user_id', $user->id)
+                ->whereIn('masterdata_id', $allergiesToDelete)
+                ->delete();
+        }
+
+        // Add new allergies not already in the database
+        $allergiesToAdd = array_diff($newAllergies, $existingAllergies);
+        foreach ($allergiesToAdd as $allergy) {
             allergies::create([
                 'masterdata_id' => $allergy,
-                'user_id' => $user -> id,
+                'user_id' => $user->id,
             ]);
         }
 
