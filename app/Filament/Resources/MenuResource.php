@@ -33,11 +33,15 @@ class MenuResource extends Resource
 
         // Build the query to check for available ingredients
         if (!empty($availableIngredients)) {
+            // Build the query to check for available ingredients
             $query->where(function ($subQuery) use ($availableIngredients) {
                 foreach ($availableIngredients as $ingredient) {
                     $subQuery->orWhere('ingredient', 'like', '%' . $ingredient . '%');
                 }
             });
+        } else {
+            // If there are no available ingredients, return an empty query
+            $query->whereRaw('1 = 0'); // This will always evaluate to false
         }
 
         return $table
