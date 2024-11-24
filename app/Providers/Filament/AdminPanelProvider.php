@@ -65,7 +65,6 @@ class AdminPanelProvider extends PanelProvider
                 ->customProfileComponents([
                     \App\Livewire\CustomProfileComponent::class,
                 ]),
-                FilamentSpatieRolesPermissionsPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
             ])
             ->authMiddleware([

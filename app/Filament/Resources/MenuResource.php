@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MenuResource\Pages;
 use App\Models\Ingredients;
 use App\Models\Menu;
+use App\Models\recipes;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Models\allergies;
 use App\Models\MasterData;

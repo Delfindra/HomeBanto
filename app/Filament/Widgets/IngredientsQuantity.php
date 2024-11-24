@@ -34,12 +34,13 @@ class IngredientsQuantity extends BaseWidget
                     }),
                 TextColumn::make('name')
                     ->searchable(),
-                BadgeColumn::make('quantity')
+                TextColumn::make('quantity')
+                    ->badge()
                     ->label('Stock')
                     ->colors([
-                        'success' => static fn ($record) => $record->quantity > 3,
-                        'warning' => static fn ($record) => $record->quantity > 0 && $record->quantity <= 3,
-                        'danger' => static fn ($record) => $record->quantity == 0,
+                        'success' => static fn($record) => $record->quantity > 3,
+                        'warning' => static fn($record) => $record->quantity > 0 && $record->quantity <= 3,
+                        'danger' => static fn($record) => $record->quantity == 0,
                     ])
             ]);
     }
