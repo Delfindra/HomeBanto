@@ -6,21 +6,17 @@ use App\Filament\Resources\MenuResource\Pages;
 use App\Models\Ingredients;
 use App\Models\recipes;
 use App\Models\MasterData;
-use App\Models\Menu;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Textarea;
 
 
 class RecipeResource extends Resource implements HasShieldPermissions
 {
-    protected static ?string $model = Menu::class;
+    protected static ?string $model = recipes::class;
 
     protected static ?string $navigationIcon = 'recipe';
 
@@ -58,21 +54,25 @@ class RecipeResource extends Resource implements HasShieldPermissions
                     ->required(),
                 Forms\Components\TextInput::make('description')
                     ->required(),
-                Forms\Components\Textarea::make('intruction')
+                Forms\Components\Textarea::make('instruction')
                     ->required()
                     ->rows(10)
                     ->cols(20),
                 Forms\Components\TextInput::make('cooking_time')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('diffcutly_level')
+                Forms\Components\TextInput::make('dificulty_level')
                     ->required(),
-                Forms\Components\Select::make('ingredients')
+                Forms\Components\Select::make('ingredient')
                     ->label('Ingredients')
                     ->multiple()
-                    ->options(options: ingredients::all()->pluck('name', 'id'))
+                    ->options(options: MasterData::all()->pluck('name', 'name'))
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->default(function ($record) {
+                        // Check if the field has a value and decode it into an array
+                        return $record && isset($record->preferences) ? json_decode($record->preferences, true) : [];
+                    }),
                 Forms\Components\FileUpload::make('image')
                     ->image()
                     ->disk('public')
@@ -87,14 +87,16 @@ class RecipeResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(200)
-                    ->height(200)
+                    ->width(150)
+                    ->height(150)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
+                    ->wrap()
+                    ->limit(250)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('instruction')
                     ->label('Instruksi')
@@ -104,10 +106,11 @@ class RecipeResource extends Resource implements HasShieldPermissions
                     ->wrap()
                     ->limit(250),
                 Tables\Columns\TextColumn::make('cooking_time')
-                    ->label('Waktu/menit')
+                    ->label('Waktu')
                     ->numeric()
+                    ->suffix(' menit')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('diffcutly_level')
+                Tables\Columns\TextColumn::make('dificulty_level')
                     ->label('Kesulitan')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ingredient')
@@ -120,6 +123,7 @@ class RecipeResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
