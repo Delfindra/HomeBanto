@@ -17,6 +17,6 @@ class DietIngredient extends Model
     }
 
     public function masterData(): BelongsTo {
-        return $this->belongsTo(MasterData::class,'masterdata_id', 'id');
+        return $this->belongsTo(MasterData::class);
     }
 }
