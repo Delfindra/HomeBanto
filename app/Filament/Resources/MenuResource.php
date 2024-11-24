@@ -31,36 +31,13 @@ class MenuResource extends Resource
 
         $query = recipes::query();
 
-        // // Get the recipe with the most ingredients
-        // $recipeWithMostIngredients = recipes::select('id', 'name', 'ingredient')
-        // ->selectRaw('LENGTH(ingredient) - LENGTH(REPLACE(ingredient, ",", "")) + 1 as ingredient_count')
-        // ->groupBy('id', 'name', 'ingredient')
-        // ->orderBy('ingredient_count', 'desc')
-        // ->first();
-
-        // // If a recipe is found, you can access its ingredient count
-        // if ($recipeWithMostIngredients) {
-        //     $mostIngredientsCount = $recipeWithMostIngredients->ingredient_count;
-        //     // You can return or use this count value as needed
-        //     // For example, you could log it or set it to a property
-        //     // Log::info('Recipe with most ingredients has count: ' . $mostIngredientsCount);
-        // }
-
-        // Check if there are any available ingredients
-        if (count($availableIngredients) > 0) {
-            $query->where(function ($query) use ($availableIngredients) {
-                // For each recipe, check if all required ingredients are available
+        // Build the query to check for available ingredients
+        if (!empty($availableIngredients)) {
+            $query->where(function ($subQuery) use ($availableIngredients) {
                 foreach ($availableIngredients as $ingredient) {
-                    // Check if the recipe contains this ingredient
-                    $query->orWhere(function ($subQuery) use ($ingredient) {
-                        $subQuery->where('ingredient', 'like', '%' . $ingredient . '%');
-                    });
+                    $subQuery->orWhere('ingredient', 'like', '%' . $ingredient . '%');
                 }
             });
-
-            // Ensure that the recipe contains all required ingredients
-            // Use a condition that counts the number of required ingredients in the recipe
-            $query->whereRaw('LENGTH(ingredient) - LENGTH(REPLACE(ingredient, ",", "")) + 1 <= ?', [count($availableIngredients)]);
         }
 
         return $table
