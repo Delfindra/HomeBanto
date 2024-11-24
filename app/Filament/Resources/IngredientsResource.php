@@ -124,8 +124,8 @@ class IngredientsResource extends Resource
     ->searchable()
 
     ->formatStateUsing(function ($record) {
-        $expiryDate = \Carbon\Carbon::parse($record->expiry_date);
-        $currentDate = \Carbon\Carbon::now();
+        $expiryDate = Carbon::parse($record->expiry_date);
+        $currentDate = Carbon::now();
         $daysLeft = $expiryDate->diffInDays($currentDate, false);
 
         if ($expiryDate->lt($currentDate)) {

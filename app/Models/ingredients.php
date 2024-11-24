@@ -37,22 +37,5 @@ class Ingredients extends Model
     public static function boot()
     {
         parent::boot();
-
-        // Listen for saving event
-        static::saving(function ($ingredient) {
-            $expiryDate = Carbon::parse($ingredient->expiry_date);
-            $currentDate = Carbon::now();
-
-            $daysLeft = $expiryDate->diffInDays($currentDate, false);
-
-            // Update the status based on the expiry date
-            if ($expiryDate->lt($currentDate)) {
-                $ingredient->status = 'Expired (' . abs(intval($daysLeft)) . ' days ago)';
-            } elseif ($expiryDate->lte($currentDate->addDays(7))) {
-                $ingredient->status = 'Nearly Expired (' . abs(intval($daysLeft)) . ' days left)';
-            } else {
-                $ingredient->status = 'Fresh (' . abs(intval($daysLeft)) . ' days left)';
-            }
-        });
     }
 }
