@@ -97,6 +97,7 @@ class RecipeResource extends Resource
                     ->sortable(),   
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Ingredients')
+                    ->searchable()
                     ->formatStateUsing(fn($state) => nl2br(str_replace(',', "\n", $state)))
                     ->html()
                     ->wrap()

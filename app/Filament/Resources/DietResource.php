@@ -5,13 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DietResource\Pages;
 use App\Filament\Resources\DietResource\RelationManagers;
 use App\Models\Diet;
+use App\Models\DietIngredient;
+use App\Models\MasterData;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DietResource extends Resource
 {
@@ -45,6 +45,18 @@ class DietResource extends Resource
                     ->wrap()
                     ->limit(1000)
                     ->searchable(),
+                Tables\Columns\TextColumn::make('dietIngredients.name')
+                    ->default('Edit to add ingredients -->')
+                    ->label('Ingredients')
+                    ->getStateUsing(function (Diet $record) {
+                        $ingredients = $record->dietIngredients->pluck('masterData.name')->implode(', ');
+
+                        // If no ingredients, return the styled default message
+                        return $ingredients ?: '<span style="color: lightgreen;">Edit to add ingredients --></span>';
+                    })
+                    ->html()
+                    ->sortable()
+                    ->searchable(),   
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
