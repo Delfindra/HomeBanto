@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
+use App\Models\Diet;
 use App\Models\Menu;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Models\allergies;
@@ -47,15 +48,22 @@ class MenuResource extends Resource implements HasShieldPermissions
         $allergyIds = Allergies::where('user_id', $user->id)->pluck('masterdata_id')->toArray();
         $allergyIngredients = MasterData::whereIn('id', $allergyIds)->pluck('name')->toArray();
 
+        // Retrieve diet name
+        $dietId = $user->diet_id;
+        $dietType = Diet::where('id', $dietId)->pluck('name')->first();
+
         // Display the user's allergies
         $allergiesDisplay = !empty($allergyIngredients) ? implode(', ', $allergyIngredients) : 'No allergies selected';
 
         return $table
-            ->heading('Recommended Recipe (Available Ingredient + Allergies)')
+            ->heading('Recommended Recipe')
             ->headerActions([
                 Tables\Actions\Action::make('showAllergies')
                     ->label('Your Allergies: [ ' . $allergiesDisplay.' ]')
                     ->color('secondary'),
+                Tables\Actions\Action::make('showDiet')
+                    ->label('Your Diet: [ ' .$dietType. ' ]')
+                    ->color('secodary'),
             ])
             ->columns([
                 Tables\Columns\ImageColumn::make('image')

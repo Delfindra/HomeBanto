@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('custom_fields');
-            $table->foreignId('diet_id')->nullable();
+            $table->foreignId('diet_id')->nullable()->constrained('diets', 'id')->onDelete('set null');
         });
     }
 

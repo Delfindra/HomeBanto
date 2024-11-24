@@ -7,10 +7,9 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateRecipe extends CreateRecord
 {   
-    protected function afterSave(): void
+    protected function getRedirectUrl(): string
     {
-        // Redirect back to the list page
-        $this->redirect(static::getResource()::getUrl('index'));
+        return $this->getResource()::getUrl('index');
     }
     
     protected static string $resource = RecipeResource::class;

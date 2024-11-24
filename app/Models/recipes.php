@@ -30,4 +30,9 @@ class recipes extends Model
             'ingredient_id'
         );
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

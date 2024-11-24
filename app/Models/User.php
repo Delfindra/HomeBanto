@@ -82,6 +82,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 //        }
         return true;
     }
+    
 
     public function preferences()
     {
@@ -91,6 +92,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function allergies()
     {
         return $this->hasMany(allergies::class);
+    }
+
+    public function diet()
+    {
+        return $this->belongsTo(Diet::class);
+    }
+
+    public function recipes()
+    {
+        return $this->hasMany(recipes::class);
     }
 
     public function ingredients()
@@ -110,4 +121,5 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+    
 }
