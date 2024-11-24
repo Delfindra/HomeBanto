@@ -6,9 +6,12 @@ use App\Filament\Resources\MenuResource\Pages;
 use App\Models\Menu;
 use App\Models\Ingredients;
 use App\Models\recipes;
+use App\Models\allergies;
+use App\Models\MasterData;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class MenuResource extends Resource
 {
@@ -29,6 +32,12 @@ class MenuResource extends Resource
     {
         $availableIngredients = Ingredients::all()->pluck('name')->toArray();
 
+        $user = Auth::user();
+
+        // Retrieve allergies for the user and get the corresponding ingredient names
+        $allergyIds = Allergies::where('user_id', $user->id)->pluck('masterdata_id')->toArray();
+        $allergyIngredients = MasterData::whereIn('id', $allergyIds)->pluck('name')->toArray();
+
         $query = recipes::query();
 
         // Build the query to check for available ingredients
@@ -43,6 +52,16 @@ class MenuResource extends Resource
             // If there are no available ingredients, return an empty query
             $query->whereRaw('1 = 0'); // This will always evaluate to false
         }
+
+        // Exclude recipes that contain allergens
+        if (!empty($allergyIngredients)) {
+            $query->where(function ($subQuery) use ($allergyIngredients) {
+                foreach ($allergyIngredients as $allergen) {
+                    $subQuery->where('ingredient', 'not like', '%' . $allergen . '%');
+                }
+            });
+        }
+
 
         return $table
             ->query($query)
@@ -76,7 +95,10 @@ class MenuResource extends Resource
             ->bulkActions([
                 //
             ]);
+
+            
     }
+    
     
     public static function getRelations(): array
     {
