@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recipe_ingredients', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('diet_ingredients', function (Blueprint $table) {
+            $table->renameColumn('masterdata_id', 'master_data_id');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recipe_ingredients');
+        Schema::table('diet_ingredients', function (Blueprint $table) {
+            //
+        });
     }
 };

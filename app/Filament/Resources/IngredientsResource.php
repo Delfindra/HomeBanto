@@ -21,7 +21,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Ingredients::class;
 
-    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-3.svg';
+    protected static ?string $navigationIcon = 'ingredient';
 
     protected static ?string $navigationLabel = 'Inventaris Kulkas';
 
@@ -44,6 +44,11 @@ class IngredientsResource extends Resource implements HasShieldPermissions
     }
 
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+    
     public static function getEloquentQuery(): Builder
     {
         // Filter data hanya untuk user yang sedang login

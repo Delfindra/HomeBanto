@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Ingredients;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -24,16 +25,22 @@ class IngredientsQuantity extends BaseWidget
         return $table
             ->query(
                 Ingredients::where('users_id', $user->id)
-                ->where('quantity', '<=', 5)
+                    ->where('quantity', '<=', 5)
             )
             ->columns([
                 TextColumn::make('No.')
                     ->getStateUsing(static function ($record, $rowLoop): string {
                         return (string) $rowLoop->iteration;
                     }),
-                    TextColumn::make('name'),
-                    TextColumn::make('quantity')
-                    ->label('Stock'),
+                TextColumn::make('name')
+                    ->searchable(),
+                BadgeColumn::make('quantity')
+                    ->label('Stock')
+                    ->colors([
+                        'success' => static fn ($record) => $record->quantity > 3,
+                        'warning' => static fn ($record) => $record->quantity > 0 && $record->quantity <= 3,
+                        'danger' => static fn ($record) => $record->quantity == 0,
+                    ])
             ]);
     }
 }

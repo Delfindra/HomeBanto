@@ -16,7 +16,7 @@ class DietResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Diet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'diet';
 
     protected static ?string $navigationGroup = 'Admin';
 
@@ -32,6 +32,10 @@ class DietResource extends Resource implements HasShieldPermissions
             'publish'
         ];
     }
+    public static function getNavigationBadge(): ?string
+{
+    return static::getModel()::count();
+}
 
     public static function form(Form $form): Form
     {
@@ -80,6 +84,7 @@ class DietResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

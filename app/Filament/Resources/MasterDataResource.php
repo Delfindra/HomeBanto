@@ -16,7 +16,7 @@ class MasterDataResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = MasterData::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'data';
 
     protected static ?string $navigationGroup = 'Admin';
 
@@ -35,6 +35,11 @@ class MasterDataResource extends Resource implements HasShieldPermissions
             'delete_any',
             'publish'
         ];
+    }
+    
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 
     public static function form(Form $form): Form
@@ -89,6 +94,7 @@ class MasterDataResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -100,7 +106,6 @@ class MasterDataResource extends Resource implements HasShieldPermissions
     public static function getRelations(): array
     {
         return [
-            //
         ];
     }
 

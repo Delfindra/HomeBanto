@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Ingredients;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -36,7 +37,7 @@ class IngredientsExpiry extends BaseWidget
                     ->date('d M Y'),
                 TextColumn::make('name')
                 ->searchable(),
-                TextColumn::make('status')
+                BadgeColumn::make('status')
                     ->getStateUsing(static function ($record): string {
                         $daysLeft = intval(now()->diffInDays($record->expiry_date, false));
                         if ($daysLeft > 0) {
@@ -47,6 +48,12 @@ class IngredientsExpiry extends BaseWidget
                             return "Expired";
                         }
                     })
+                    ->colors([
+                        'success' => static fn ($record) => now()->diffInDays($record->expiry_date, false) > 3,
+                        'warning' => static fn ($record) => now()->diffInDays($record->expiry_date, false) > 0 && now()->diffInDays($record->expiry_date, false) <= 3,
+                        'danger' => static fn ($record) => now()->diffinDays($record->expiry_date, false) == 0,
+                        'secondary' => static fn ($record) => now()->diffInDays($record->expiry_date, false) < 0,
+                    ])
             ]);
     }
 }

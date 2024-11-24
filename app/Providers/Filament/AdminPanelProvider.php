@@ -57,18 +57,20 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
                 FilamentEditProfilePlugin::make()
-                    ->slug('my-profile')
-                    ->setTitle('My Profile')
-                    ->setNavigationLabel('My Profile')
-                    ->setIcon('heroicon-o-user')
-                    ->setSort(-1)
-                    ->setNavigationGroup('Settings')
-                    ->customProfileComponents([
-                        CustomProfileComponent::class,
-                    ]),
+                ->slug('my-profile')
+                ->setTitle('My Profile')
+                ->setNavigationLabel('My Profile')
+                ->setIcon('heroicon-o-user')
+                ->setSort(-1)
+                ->customProfileComponents([
+                    \App\Livewire\CustomProfileComponent::class,
+                ]),
+                FilamentSpatieRolesPermissionsPlugin::make(),
+                \Hasnayeen\Themes\ThemesPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \Hasnayeen\Themes\Http\Middleware\SetTheme::class
             ]);
     }
 }
