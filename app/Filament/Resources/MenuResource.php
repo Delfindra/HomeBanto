@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class MenuResource extends Resource implements HasShieldPermissions
 {
@@ -22,7 +23,7 @@ class MenuResource extends Resource implements HasShieldPermissions
 
     protected static ?string $navigationIcon = 'menu';
 
-    protected static ?string $navigationLabel = 'Rekomendasi Menu';
+    protected static ?string $navigationLabel = 'Recommendation Menu';
 
 
     public static function getPermissionPrefixes(): array
@@ -43,38 +44,6 @@ class MenuResource extends Resource implements HasShieldPermissions
         return false;
     }
 
-
-    // public static function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             Forms\Components\TextInput::make('name')
-    //                 ->required(),
-    //             Forms\Components\TextInput::make('description')
-    //                 ->required(),
-    //             Forms\Components\Textarea::make('intruction')
-    //                 ->required()
-    //                 ->rows(10)
-    //                 ->cols(20),
-    //             Forms\Components\TextInput::make('cooking_time')
-    //                 ->required()
-    //                 ->numeric(),
-    //             Forms\Components\TextInput::make('diffcutly_level')
-    //                 ->required(),
-    //             Forms\Components\Select::make('ingredients')
-    //                 ->label('Ingredients')
-    //                 ->multiple()
-    //                 ->options(options: ingredients::all()->pluck('name', 'id'))
-    //                 ->searchable()
-    //                 ->required(),
-    //             Forms\Components\FileUpload::make('image')
-    //                 ->image()
-    //                 ->disk('public')
-    //                 ->preserveFilenames()
-    //                 ->required(),
-    //         ]);
-    // }
-
     public static function table(Table $table): Table
     {
         $availableIngredients = Ingredients::all()->pluck('name')->toArray();
@@ -90,42 +59,46 @@ class MenuResource extends Resource implements HasShieldPermissions
 
         $query = recipes::query();
 
-        // Build the query to check for available ingredients
-        if (!empty($availableIngredients)) {
+        // Check if the recipes table has the 'ingredient' column
+        if (Schema::hasColumn('recipes', 'ingredient')) {
             // Build the query to check for available ingredients
-            $query->where(function ($subQuery) use ($availableIngredients) {
-                foreach ($availableIngredients as $ingredient) {
-                    $subQuery->orWhere('ingredient', 'like', '%' . $ingredient . '%');
-                }
-            });
+            if (!empty($availableIngredients)) {
+                $query->where(function ($subQuery) use ($availableIngredients) {
+                    foreach ($availableIngredients as $ingredient) {
+                        $subQuery->orWhere('ingredient', 'like', '%' . $ingredient . '%');
+                    }
+                });
+            } else {
+                $query->whereRaw('1 = 0'); // If no available ingredients, return an empty query
+            }
+
+            // Exclude recipes that contain allergens
+            if (!empty($allergyIngredients)) {
+                $query->where(function ($subQuery) use ($allergyIngredients) {
+                    foreach ($allergyIngredients as $allergen) {
+                        $subQuery->where('ingredient', 'not like', '%' . $allergen . '%');
+                    }
+                });
+            }
         } else {
-            // If there are no available ingredients, return an empty query
+            // Handle the case where the 'ingredient' column does not exist
+            // You might want to return an empty result set or log an error
             $query->whereRaw('1 = 0'); // This will always evaluate to false
         }
 
-        // Exclude recipes that contain allergens
-        if (!empty($allergyIngredients)) {
-            $query->where(function ($subQuery) use ($allergyIngredients) {
-                foreach ($allergyIngredients as $allergen) {
-                    $subQuery->where('ingredient', 'not like', '%' . $allergen . '%');
-                }
-            });
-        }
-
-
         return $table
+            ->heading('Recommended Recipe (Available Ingredient + Allergies)')
             ->headerActions([
                 Tables\Actions\Action::make('showAllergies')
                     ->label('Your Allergies: [ ' . $allergiesDisplay.' ]')
-                    ->color('secondary')
-                    ->url('#'), // You can customize the URL or action if needed
+                    ->color('secondary'),
             ])
             ->query($query)
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(200)
-                    ->height(200)
+                    ->width(100)
+                    ->height(100)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Menu')
@@ -133,47 +106,13 @@ class MenuResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('intruction')
-                    ->label('Instruksi')    
-                    ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
-                    ->html()
-                    ->wrap()
-                    ->limit(250)
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Bahan')
-                    
                     ->html()
                     ->searchable(),
             ])
             ->filters([
-                // Example of how to filter ingredients based on availability in the Ingredients table
-                Tables\Filters\SelectFilter::make('ingredient')
-                    ->label('Available Ingredients')
-                    ->options(function () {
-                        return Ingredients::all()->pluck('name', 'id')->toArray();
-                    })
-                    ->query(function (Builder $query) {
-                        // Fetch the list of available ingredients
-                        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
-
-                        // Get the selected ingredient value from the request
-                        $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
-
-                        // If a specific ingredient is selected, filter by that ingredient
-                        if ($selectedIngredient) {
-                            return $query->whereJsonContains('ingredient', $selectedIngredient);
-                        }
-
-                        // If no ingredient is selected, filter by any available ingredient
-                        return $query->where(function ($query) use ($availableIngredients) {
-                            foreach ($availableIngredients as $ingredient) {
-                                // Check if the recipe's ingredient JSON contains any of the available ingredients
-                                $query->orWhereJsonContains('ingredient', $ingredient);
-                            }
-                        });
-                    }),
+                //
             ])
             ->actions([
                 //Tables\Actions\EditAction::make(),
@@ -198,8 +137,6 @@ class MenuResource extends Resource implements HasShieldPermissions
     {
         return [
             'index' => Pages\ListMenus::route('/'),
-            //'create' => Pages\CreateMenu::route('/create'),
-            //'edit' => Pages\EditMenu::route('/{record}/edit'),
         ];
     }
 }

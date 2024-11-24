@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('cooking_time');
             $table->string('diffcutly_level');
             $table->string('image');
+            $table->longText('ingredient')->nullable();
             $table->timestamps();
         });
     }

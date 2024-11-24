@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('dificulty_level');
             $table->binary('image');
             $table->integer('cooking_time');
+            $table->longText('ingredient')->nullable();
             $table->timestamps();
         });
     }

@@ -16,4 +16,7 @@ class Menu extends Model
     //     return $this->belongsToMany(Ingredients::class, 'ingredient_recipe', 'recipe_id', 'ingredient_id');
     // }
 
+    protected $casts = [
+        'ingredients' => 'array',
+    ];
 }

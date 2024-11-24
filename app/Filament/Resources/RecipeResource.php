@@ -24,7 +24,7 @@ class RecipeResource extends Resource implements HasShieldPermissions
 
     protected static ?string $navigationIcon = 'recipe';
 
-    protected static ?string $navigationLabel = 'Resep';
+    protected static ?string $navigationLabel = 'Recipe';
 
     public static function getLabel(): string
     {
@@ -59,6 +59,7 @@ class RecipeResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('description')
                     ->required(),
                 Forms\Components\Textarea::make('intruction')
+                    ->label('instruction')
                     ->required()
                     ->rows(10)
                     ->cols(20),
@@ -66,11 +67,12 @@ class RecipeResource extends Resource implements HasShieldPermissions
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('diffcutly_level')
-                    ->required(),
+                    ->required()
+                    ->label('Difficulty Level'),
                 Forms\Components\Select::make('ingredients')
                     ->label('Ingredients')
                     ->multiple()
-                    ->options(options: ingredients::all()->pluck('name', 'id'))
+                    ->options(fn() => MasterData::pluck('name', 'id')->toArray())
                     ->searchable()
                     ->required(),
                 Forms\Components\FileUpload::make('image')
@@ -86,37 +88,40 @@ class RecipeResource extends Resource implements HasShieldPermissions
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar')
                     ->width(200)
                     ->height(200)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->label('Deskripsi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('instruction')
-                    ->label('Instruksi')
+                Tables\Columns\TextColumn::make('intruction')
+                    ->label('Instruction')
                     ->searchable()
                     ->formatStateUsing(fn($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
                 Tables\Columns\TextColumn::make('cooking_time')
-                    ->label('Waktu/menit')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('diffcutly_level')
-                    ->label('Kesulitan')
+                    ->label('Difficulty Level')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient')
-                    ->label('Ingredients')
-                    ->searchable()
-                    ->formatStateUsing(fn($state) => nl2br(str_replace(',', "\n", $state)))
-                    ->html()
+                Tables\Columns\TextColumn::make('ingredients')
+                    ->formatStateUsing(function ($state) {
+                        $ingredientIds = explode(',', $state);
+
+                        if (is_array($ingredientIds)) {
+                            $ingredientNames = MasterData::whereIn('id', $ingredientIds)->pluck('name')->toArray();
+                            return implode(', ', $ingredientNames);
+                        }
+
+                        return '-';
+                    })
                     ->wrap()
-                    ->limit(250),
+                    ->html(),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -23,7 +23,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
 
     protected static ?string $navigationIcon = 'ingredient';
 
-    protected static ?string $navigationLabel = 'Inventaris Kulkas';
+    protected static ?string $navigationLabel = 'Refrigerator Inventory';
 
     public static function getPermissionPrefixes(): array
     {
@@ -85,7 +85,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'seasonings' => 'Seasonings',
                     ])
                     ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn (callable $set) => $set('quantity', null)), // Reset quantity when category changes
+                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
@@ -132,24 +132,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->label('Food Category'),
 
-                Tables\Columns\TextColumn::make('quantity')
-                    ->searchable()
-                    ->label('Quantity')
-                    ->formatStateUsing(fn ($record) => match ($record->category) {
-                        'fruit' => $record->quantity . ' kg',
-                        'vegetable' => $record->quantity . ' kg',
-                        'livestock' => $record->quantity . ' kg',
-                        'snack' =>  $record->quantity .' pack',
-                        'beverage' => $record->quantity . ' liters',
-                        'dry_food' => $record->quantity .' kg',
-                        'staple_food' => $record->quantity .' kg',
-                        'seafood' => $record->quantity .' gr',
-                        'seasonings' => $record->quantity . ' gr',
-                        default => $record->quantity .' units',
-                        'seasonings' => $record->quantity . ' g',
-                        'meat' => $record->quantity . ' kg',
-                    }),
-
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->sortable()
                     ->searchable()
@@ -159,25 +141,31 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('expiry_date')
                     ->sortable()
                     ->searchable()
-                    ->label('Expiry Date')
-                    ->label('Nama Bahan'),
-
-                Tables\Columns\TextColumn::make('purchase_date')
-                    ->label('Tanggal Pembelian')
-                    ->date(),
-
-                Tables\Columns\TextColumn::make('expiry_date')
-                    ->label('Tanggal Kadaluarsa')
-                    ->date(),
+                    ->label('Expiry Date'),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->badge()
+                    ->searchable()
                     ->label('Stock')
+                    ->formatStateUsing(fn($record) => match ($record->category) {
+                        'fruit' => $record->quantity . ' kg',
+                        'vegetable' => $record->quantity . ' kg',
+                        'livestock' => $record->quantity . ' kg',
+                        'snack' =>  $record->quantity . ' pack',
+                        'beverage' => $record->quantity . ' liters',
+                        'dry_food' => $record->quantity . ' kg',
+                        'staple_food' => $record->quantity . ' kg',
+                        'seafood' => $record->quantity . ' gr',
+                        'seasonings' => $record->quantity . ' gr',
+                        default => $record->quantity . ' units',
+                        'seasonings' => $record->quantity . ' g',
+                        'meat' => $record->quantity . ' kg',
+                    })
                     ->colors([
                         'success' => static fn($record) => $record->quantity > 3,
                         'warning' => static fn($record) => $record->quantity > 0 && $record->quantity <= 3,
                         'danger' => static fn($record) => $record->quantity == 0,
                     ]),
+
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->label('Status')
