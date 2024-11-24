@@ -38,6 +38,9 @@ class MenuResource extends Resource
         $allergyIds = Allergies::where('user_id', $user->id)->pluck('masterdata_id')->toArray();
         $allergyIngredients = MasterData::whereIn('id', $allergyIds)->pluck('name')->toArray();
 
+        // Display the user's allergies
+        $allergiesDisplay = !empty($allergyIngredients) ? implode(', ', $allergyIngredients) : 'No allergies selected';
+
         $query = recipes::query();
 
         // Build the query to check for available ingredients
@@ -64,6 +67,12 @@ class MenuResource extends Resource
 
 
         return $table
+            ->headerActions([
+                Tables\Actions\Action::make('showAllergies')
+                    ->label('Your Allergies: [ ' . $allergiesDisplay.' ]')
+                    ->color('secondary')
+                    ->url('#'), // You can customize the URL or action if needed
+            ])
             ->query($query)
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
