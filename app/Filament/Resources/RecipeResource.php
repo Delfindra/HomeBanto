@@ -51,17 +51,6 @@ class RecipeResource extends Resource implements HasShieldPermissions
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->required(),
-                Forms\Components\Textarea::make('instruction')
-                    ->required()
-                    ->rows(10)
-                    ->cols(20),
-                Forms\Components\TextInput::make('cooking_time')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('dificulty_level')
-                    ->required(),
                 Forms\Components\Select::make('ingredient')
                     ->label('Ingredients')
                     ->multiple()
@@ -72,6 +61,20 @@ class RecipeResource extends Resource implements HasShieldPermissions
                         // Check if the field has a value and decode it into an array
                         return $record && isset($record->preferences) ? json_decode($record->preferences, true) : [];
                     }),
+                Forms\Components\Textarea::make('description')
+                    ->required()
+                    ->rows(10)
+                    ->cols(20),
+                Forms\Components\Textarea::make('instruction')
+                    ->required()
+                    ->rows(10)
+                    ->cols(20),
+                Forms\Components\TextInput::make('cooking_time')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('dificulty_level')
+                    ->required(),
+            
                 Forms\Components\FileUpload::make('image')
                     ->image()
                     ->disk('public')
