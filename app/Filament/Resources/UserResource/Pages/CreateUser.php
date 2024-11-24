@@ -8,5 +8,11 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
 {
+    protected function afterSave(): void
+    {
+        // Redirect back to the list page
+        $this->redirect(static::getResource()::getUrl('index'));
+    }
+    
     protected static string $resource = UserResource::class;
 }

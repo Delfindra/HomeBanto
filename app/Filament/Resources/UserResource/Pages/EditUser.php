@@ -8,6 +8,12 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditUser extends EditRecord
 {
+    protected function afterSave(): void
+    {
+        // Redirect back to the list page
+        $this->redirect(static::getResource()::getUrl('index'));
+    }
+    
     protected static string $resource = UserResource::class;
 
     protected function getHeaderActions(): array

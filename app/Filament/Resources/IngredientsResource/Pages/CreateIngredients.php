@@ -8,6 +8,12 @@ use App\Models\MasterData;
 
 class CreateIngredients extends CreateRecord
 {
+    protected function afterSave(): void
+    {
+        // Redirect back to the list page
+        $this->redirect(static::getResource()::getUrl('index'));
+    }
+
     protected static string $resource = IngredientsResource::class;
 
 }
