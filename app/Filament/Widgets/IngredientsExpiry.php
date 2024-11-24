@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Ingredients;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class IngredientsExpiry extends BaseWidget
 {
-    protected static ?string $heading = 'Ingredients Expiry Summary';
+    protected static ?string $heading = 'Ingredients Near Expiry';
 
     public function getTableRecordKey($record): string
     {
@@ -26,7 +27,8 @@ class IngredientsExpiry extends BaseWidget
             ->query(
                 Ingredients::where('users_id', $user->id)
                     ->whereDate('expiry_date', '>=', now()->startOfDay())
-                    ->whereDate('expiry_date', '<=', now()->addDays(7)->endOfDay()))
+                    ->whereDate('expiry_date', '<=', now()->addDays(7)->endOfDay())
+            )
             ->columns([
                 TextColumn::make('No.')
                     ->getStateUsing(static function ($record, $rowLoop): string {
@@ -34,8 +36,10 @@ class IngredientsExpiry extends BaseWidget
                     }),
                 TextColumn::make('expiry_date')
                     ->date('d M Y'),
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->searchable(),
                 TextColumn::make('status')
+                    ->badge()
                     ->getStateUsing(static function ($record): string {
                         $daysLeft = intval(now()->diffInDays($record->expiry_date, false));
                         if ($daysLeft > 0) {
@@ -46,6 +50,12 @@ class IngredientsExpiry extends BaseWidget
                             return "Expired";
                         }
                     })
+                    ->colors([
+                        'success' => static fn($record) => now()->diffInDays($record->expiry_date, false) > 3,
+                        'warning' => static fn($record) => now()->diffInDays($record->expiry_date, false) > 0 && now()->diffInDays($record->expiry_date, false) <= 3,
+                        'danger' => static fn($record) => now()->diffinDays($record->expiry_date, false) == 0,
+                        'secondary' => static fn($record) => now()->diffInDays($record->expiry_date, false) < 0,
+                    ])
             ]);
     }
 }

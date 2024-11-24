@@ -5,21 +5,37 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DietResource\Pages;
 use App\Filament\Resources\DietResource\RelationManagers;
 use App\Models\Diet;
-use App\Models\DietIngredient;
-use App\Models\MasterData;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class DietResource extends Resource
+class DietResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Diet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'diet';
 
     protected static ?string $navigationGroup = 'Admin';
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
+    public static function getNavigationBadge(): ?string
+{
+    return static::getModel()::count();
+}
 
     public static function form(Form $form): Form
     {
@@ -28,10 +44,9 @@ class DietResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\TextInput::make('description')
                     ->required()
-                    ->rows(10)
-                    ->cols(20),
+                    ->maxLength(255),
             ]);
     }
 
@@ -41,22 +56,7 @@ class DietResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->wrap()
-                    ->limit(1000)
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('dietIngredients.name')
-                    ->default('Edit to add ingredients -->')
-                    ->label('Ingredients')
-                    ->getStateUsing(function (Diet $record) {
-                        $ingredients = $record->dietIngredients->pluck('masterData.name')->implode(', ');
-
-                        // If no ingredients, return the styled default message
-                        return $ingredients ?: '<span style="color: lightgreen;">Edit to add ingredients --></span>';
-                    })
-                    ->html()
-                    ->sortable()
-                    ->searchable(),   
+                Tables\Columns\TextColumn::make('description'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -71,6 +71,7 @@ class DietResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

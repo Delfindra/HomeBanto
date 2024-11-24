@@ -9,15 +9,8 @@ class Ingredients extends Model
 {
     protected $table = 'ingredients';
 
-    protected $fillable = [
-        'users_id',
-        'name',
-        'category',
-        'quantity',
-        'purchase_date',
-        'expiry_date',  
-        'created_at',
-        'updated_at',
+    protected $guarded = [
+        'id'
     ];
 
     public function user()
@@ -25,10 +18,13 @@ class Ingredients extends Model
         return $this->belongsTo(User::class, 'users_id', 'id');
     }
 
-
     public function recipes()
     {
-        return $this->belongsToMany(recipes::class, 'ingredient_recipe', 'ingredient_id', 'recipe_id');
+        return $this->belongsToMany(
+            Recipes::class,
+            'recipe_ingredients_id',
+            'recipe_id'
+        );
     }
 
         // Update the status when fetching ingredients

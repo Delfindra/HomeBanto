@@ -6,18 +6,23 @@ use App\Filament\Resources\MenuResource\Pages;
 use App\Models\Ingredients;
 use App\Models\recipes;
 use App\Models\MasterData;
+use App\Models\Menu;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Textarea;
 
 
-class RecipeResource extends Resource
+class RecipeResource extends Resource implements HasShieldPermissions
 {
-    protected static ?string $model = recipes::class;
+    protected static ?string $model = Menu::class;
 
-    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-5.svg';
+    protected static ?string $navigationIcon = 'recipe';
 
     protected static ?string $navigationLabel = 'Resep';
 
@@ -26,6 +31,24 @@ class RecipeResource extends Resource
         return 'Resep';
     }
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -35,26 +58,21 @@ class RecipeResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('description')
                     ->required(),
-                Forms\Components\Textarea::make('instruction')
+                Forms\Components\Textarea::make('intruction')
                     ->required()
                     ->rows(10)
                     ->cols(20),
                 Forms\Components\TextInput::make('cooking_time')
                     ->required()
-                    ->numeric()
-                    ->suffix(' menit'),
-                Forms\Components\TextInput::make('dificulty_level')
+                    ->numeric(),
+                Forms\Components\TextInput::make('diffcutly_level')
                     ->required(),
-                Forms\Components\Select::make('ingredient')
+                Forms\Components\Select::make('ingredients')
                     ->label('Ingredients')
                     ->multiple()
-                    ->options(options: MasterData::all()->pluck('name', 'name'))
+                    ->options(options: ingredients::all()->pluck('name', 'id'))
                     ->searchable()
-                    ->required()
-                    ->default(function ($record) {
-                        // Check if the field has a value and decode it into an array
-                        return $record && isset($record->preferences) ? json_decode($record->preferences, true) : [];
-                    }),
+                    ->required(),
                 Forms\Components\FileUpload::make('image')
                     ->image()
                     ->disk('public')
@@ -69,32 +87,29 @@ class RecipeResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(150)
-                    ->height(150)
+                    ->width(200)
+                    ->height(200)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Menu')    
+                    ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
-                    ->wrap()
-                    ->limit(250)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('instruction')
-                    ->label('Instruksi')    
+                    ->label('Instruksi')
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
+                    ->formatStateUsing(fn($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250),
                 Tables\Columns\TextColumn::make('cooking_time')
-                    ->label('Waktu')
+                    ->label('Waktu/menit')
                     ->numeric()
-                    ->suffix(' menit')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('dificulty_level')
+                Tables\Columns\TextColumn::make('diffcutly_level')
                     ->label('Kesulitan')
-                    ->sortable(),   
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('ingredient')
                     ->label('Ingredients')
                     ->searchable()
@@ -105,7 +120,6 @@ class RecipeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -124,9 +138,9 @@ class RecipeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => RecipeResource\Pages\ListRecipes::route('/'),
-            'create' => RecipeResource\Pages\CreateRecipe::route('/create'),
-            'edit' => RecipeResource\Pages\EditRecipe::route('/{record}/edit'),
+            'index' => Pages\ListRecipes::route('/'),
+            'create' => Pages\CreateRecipe::route('/create'),
+            'edit' => Pages\EditRecipe::route('/{record}/edit'),
         ];
     }
 }

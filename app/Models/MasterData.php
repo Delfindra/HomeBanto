@@ -7,16 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class MasterData extends Model
 {
-    use HasFactory;
-
     protected $table = 'master_data';
-
-    protected $fillable = [
-        'image', 'name'
-    ];
 
     protected $guarded = [
         'id'
     ];
-
 }

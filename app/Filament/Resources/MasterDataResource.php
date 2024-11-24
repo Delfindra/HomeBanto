@@ -5,25 +5,42 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MasterDataResource\Pages;
 use App\Filament\Resources\MasterDataResource\RelationManagers;
 use App\Models\MasterData;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class MasterDataResource extends Resource
+class MasterDataResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = MasterData::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'data';
 
     protected static ?string $navigationGroup = 'Admin';
 
-    protected static ?string $modelLabel = 'Database Bahan';
+    protected static ?string $modelLabel = 'Ingredient Datas';
 
-    protected static ?string $navigationLabel = 'Database Bahan';
+    protected static ?string $navigationLabel = 'Ingredient Datas';
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
+    
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -33,11 +50,6 @@ class MasterDataResource extends Resource
                     ->label('Ingredient Name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->disk('public')
-                    ->preserveFilenames()
-                    ->required(),
             ]);
     }
 
@@ -45,13 +57,8 @@ class MasterDataResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar')
-                    ->width(50)
-                    ->height(50)
-                    ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Bahan')
+                    ->label('Ingredient')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -79,7 +86,6 @@ class MasterDataResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
         ];
     }
 

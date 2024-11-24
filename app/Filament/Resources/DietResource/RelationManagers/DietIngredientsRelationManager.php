@@ -18,7 +18,7 @@ class DietIngredientsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('masterdata_id')
+                Forms\Components\Select::make('master_data_id')
                 ->relationship('masterData', 'name')
                 ->label('Ingredient')
                 ->native(false)
@@ -35,7 +35,6 @@ class DietIngredientsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('masterData.name')
                 ->label('Ingredients'),

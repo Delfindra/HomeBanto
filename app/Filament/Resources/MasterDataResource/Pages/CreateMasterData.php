@@ -12,7 +12,6 @@ class CreateMasterData extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        // Redirect back to the index page after editing an ingredient
         return $this->getResource()::getUrl('index');
     }
 }

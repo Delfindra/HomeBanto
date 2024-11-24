@@ -43,6 +43,8 @@ class CustomProfileComponent extends Component implements HasForms
 
     public function form(Form $form): Form
     {
+        $user = Auth::user();
+
         return $form
             ->schema([
                 Section::make('Setting Preference')
@@ -51,12 +53,15 @@ class CustomProfileComponent extends Component implements HasForms
                     ->schema([
                         Forms\Components\Select::make('diet_id')
                             ->label('Diet Preference')
+                            ->default($user->diet_id)
                             ->native(false)
                             ->options(Diet::all()->pluck('name', 'id'))
                             ->searchable(),
                         Forms\Components\Select::make('allergies')
                             ->multiple()
                             ->native(false)
+                            ->default(allergies::where('user_id', $user->id
+                            )->get()->pluck('masterdata_id')->toArray())
                             ->label('Allergies')
                             ->options(MasterData::all()->pluck('name', 'id'))
                             ->searchable(),

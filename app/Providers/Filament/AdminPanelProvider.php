@@ -3,13 +3,16 @@
 namespace App\Providers\Filament;
 
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use Althinect\FilamentSpatieRolesPermissions\Resources\PermissionResource;
+use Althinect\FilamentSpatieRolesPermissions\Resources\RoleResource;
+use App\Livewire\CustomProfileComponent;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -29,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->registration()
+            ->emailVerification()
             ->colors([
                 'primary' => '#133E87',
             ])
@@ -50,19 +55,22 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
+                FilamentShieldPlugin::make(),
                 FilamentEditProfilePlugin::make()
-                ->slug('my-profile')
-                ->setTitle('My Profile')
-                ->setNavigationLabel('My Profile')
-                ->setIcon('heroicon-o-user')
-                ->setSort(-1)
-                ->customProfileComponents([
-                    \App\Livewire\CustomProfileComponent::class,
-                ]),
-                FilamentSpatieRolesPermissionsPlugin::make()
+                    ->slug('my-profile')
+                    ->setTitle('My Profile')
+                    ->setNavigationLabel('My Profile')
+                    ->setIcon('heroicon-o-user')
+                    ->setSort(-1)
+                    ->setNavigationGroup('Settings')
+                    ->customProfileComponents([
+                        CustomProfileComponent::class,
+                    ]),
+                    \Hasnayeen\Themes\ThemesPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \Hasnayeen\Themes\Http\Middleware\SetTheme::class
             ]);
     }
 }

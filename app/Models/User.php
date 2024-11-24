@@ -3,18 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Exception;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
     /**
@@ -40,20 +43,43 @@ class User extends Authenticatable implements FilamentUser
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Attempt to create a new user and handle duplicate email errors.
      */
-    protected function casts(): array
+    public static function createWithDuplicateCheck(array $data)
     {
+        try {
+            return self::create($data);
+        } catch (QueryException $e) {
+            // Check if the exception is due to a duplicate email
+            if ($e->getCode() === '23000' && strpos($e->getMessage(), 'users_email_unique') !== false) {
+                // Handle the duplicate email case, return a custom error or message
+                // Log the exception for debugging
+                Log::error('Duplicate email attempted: ' . $data['email']);
+
+                throw new Exception('The email address is already in use.');
+            }
+
+            // Rethrow the exception if it's not related to the duplicate email
+            throw $e;
+        }
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
+
+    protected static function booted()
+    {
+        static::created(function (User $user) {
+            $user->assignRole('user'); // Replace 'user' with your desired default role
+        });
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        // return $this->hasRole( 'admin');
+//        if ($panel->getId() === 'admin') {
+//            return $this->hasRole( 'admin') && $this->hasVerifiedEmail();
+//        }
         return true;
     }
 
@@ -73,24 +99,15 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Attempt to create a new user and handle duplicate email errors.
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
-    public static function createWithDuplicateCheck(array $data)
+    protected function casts(): array
     {
-        try {
-            return self::create($data);
-        } catch (QueryException $e) {
-            // Check if the exception is due to a duplicate email
-            if ($e->getCode() === '23000' && strpos($e->getMessage(), 'users_email_unique') !== false) {
-                // Handle the duplicate email case, return a custom error or message
-                // Log the exception for debugging
-                Log::error('Duplicate email attempted: ' . $data['email']);
-                
-                throw new \Exception('The email address is already in use.');
-            }
-
-            // Rethrow the exception if it's not related to the duplicate email
-            throw $e;
-        }
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

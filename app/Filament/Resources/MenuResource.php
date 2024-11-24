@@ -3,30 +3,77 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
-use App\Models\Menu;
 use App\Models\Ingredients;
+use App\Models\Menu;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Models\recipes;
 use App\Models\allergies;
 use App\Models\MasterData;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
-class MenuResource extends Resource
+class MenuResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Menu::class;
 
-    protected static ?string $navigationIcon = 'http://localhost:8000/icons/Component-1-4.svg';
+    protected static ?string $navigationIcon = 'menu';
 
     protected static ?string $navigationLabel = 'Rekomendasi Menu';
 
-    
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'publish'
+        ];
+    }
 
     public static function canCreate(): bool
     {
         return false;
     }
+
+
+    // public static function form(Form $form): Form
+    // {
+    //     return $form
+    //         ->schema([
+    //             Forms\Components\TextInput::make('name')
+    //                 ->required(),
+    //             Forms\Components\TextInput::make('description')
+    //                 ->required(),
+    //             Forms\Components\Textarea::make('intruction')
+    //                 ->required()
+    //                 ->rows(10)
+    //                 ->cols(20),
+    //             Forms\Components\TextInput::make('cooking_time')
+    //                 ->required()
+    //                 ->numeric(),
+    //             Forms\Components\TextInput::make('diffcutly_level')
+    //                 ->required(),
+    //             Forms\Components\Select::make('ingredients')
+    //                 ->label('Ingredients')
+    //                 ->multiple()
+    //                 ->options(options: ingredients::all()->pluck('name', 'id'))
+    //                 ->searchable()
+    //                 ->required(),
+    //             Forms\Components\FileUpload::make('image')
+    //                 ->image()
+    //                 ->disk('public')
+    //                 ->preserveFilenames()
+    //                 ->required(),
+    //         ]);
+    // }
 
     public static function table(Table $table): Table
     {
@@ -78,14 +125,19 @@ class MenuResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->width(width: 70)
-                    ->height(70)
+                    ->width(200)
+                    ->height(200)
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Menu')    
+                    ->label('Nama Menu')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('intruction')
+                    ->label('Instruksi')    
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => nl2br(e($state)))
                     ->html()
                     ->wrap()
                     ->limit(250)
@@ -97,19 +149,45 @@ class MenuResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                // Example of how to filter ingredients based on availability in the Ingredients table
+                Tables\Filters\SelectFilter::make('ingredient')
+                    ->label('Available Ingredients')
+                    ->options(function () {
+                        return Ingredients::all()->pluck('name', 'id')->toArray();
+                    })
+                    ->query(function (Builder $query) {
+                        // Fetch the list of available ingredients
+                        $availableIngredients = Ingredients::all()->pluck('name')->toArray();
+
+                        // Get the selected ingredient value from the request
+                        $selectedIngredient = request()->input('filters')['ingredient'] ?? null;
+
+                        // If a specific ingredient is selected, filter by that ingredient
+                        if ($selectedIngredient) {
+                            return $query->whereJsonContains('ingredient', $selectedIngredient);
+                        }
+
+                        // If no ingredient is selected, filter by any available ingredient
+                        return $query->where(function ($query) use ($availableIngredients) {
+                            foreach ($availableIngredients as $ingredient) {
+                                // Check if the recipe's ingredient JSON contains any of the available ingredients
+                                $query->orWhereJsonContains('ingredient', $ingredient);
+                            }
+                        });
+                    }),
             ])
             ->actions([
-                //Tables\Actions\ViewAction::make(),
+                //Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                //
+                Tables\Actions\BulkActionGroup::make([
+                    //Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
 
             
     }
-    
-    
+
     public static function getRelations(): array
     {
         return [
@@ -121,6 +199,8 @@ class MenuResource extends Resource
     {
         return [
             'index' => Pages\ListMenus::route('/'),
+            //'create' => Pages\CreateMenu::route('/create'),
+            //'edit' => Pages\EditMenu::route('/{record}/edit'),
         ];
     }
 }

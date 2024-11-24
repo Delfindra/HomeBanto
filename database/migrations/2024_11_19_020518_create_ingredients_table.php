@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('users_id');
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
-            $table->float('quantity');
+            $table->integer('quantity');
             $table->date('purchase_date');
             $table->date('expiry_date');
             $table->timestamps();
