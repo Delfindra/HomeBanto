@@ -46,12 +46,12 @@ class IngredientsResource extends Resource implements HasShieldPermissions
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $user = Auth::user();
+        return static::getModel()::where('users_id', $user->id)->count();
     }
-    
+
     public static function getEloquentQuery(): Builder
     {
-        // Filter data hanya untuk user yang sedang login
         return parent::getEloquentQuery()->where('users_id', Auth::id());
     }
 
@@ -60,7 +60,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Forms\Components\Hidden::make('users_id')
-                    ->default(fn () => Auth::id()) // Set default ID pengguna yang sedang login
+                    ->default(fn() => Auth::id())
                     ->required(),
 
                 Forms\Components\Select::make('name')
@@ -93,14 +93,14 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'seafood' => 'Seafood',
                         'seasonings' => 'Seasonings',
                     ])
-                    ->reactive() // Makes the form field react to changes
-                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)), // Reset quantity when category changes
+                    ->reactive()
+                    ->afterStateUpdated(fn(callable $set) => $set('quantity', null)),
 
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->label('Quantity')
                     ->placeholder('Enter quantity')
-                    ->suffix(fn ($get) => match ($get('category')) {
+                    ->suffix(fn($get) => match ($get('category')) {
                         'fruit' => 'pcs',
                         'vegetable' => 'kg',
                         'livestock' => 'kg',
@@ -172,9 +172,6 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->label('Expiry Date')
                     ->label('Nama Bahan'),
 
-                Tables\Columns\TextColumn::make('quantity')
-                    ->label('Stok'),
-
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('Tanggal Pembelian')
                     ->date(),
@@ -183,13 +180,22 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                     ->label('Tanggal Kadaluarsa')
                     ->date(),
 
+                Tables\Columns\TextColumn::make('quantity')
+                    ->badge()
+                    ->label('Stock')
+                    ->colors([
+                        'success' => static fn($record) => $record->quantity > 3,
+                        'warning' => static fn($record) => $record->quantity > 0 && $record->quantity <= 3,
+                        'danger' => static fn($record) => $record->quantity == 0,
+                    ]),
                 Tables\Columns\TextColumn::make('status')
+                    ->badge()
                     ->label('Status')
                     ->getStateUsing(function ($record) {
                         $currentDate = Carbon::now();
                         $expiryDate = Carbon::parse($record->expiry_date);
-                        $daysLeft = intval($currentDate->diffInDays($expiryDate, false)); // Cast to integer
-                
+                        $daysLeft = intval($currentDate->diffInDays($expiryDate, false));
+
                         if ($daysLeft > 3) {
                             return "{$daysLeft} " . ($daysLeft === 1 ? 'day left' : 'days left') . " (Fresh)";
                         } elseif ($daysLeft > 0) {
@@ -200,9 +206,15 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                             return "Expired (" . abs($daysLeft) . " " . (abs($daysLeft) === 1 ? 'day ago' : 'days ago') . ")";
                         }
                     })
+                    ->colors([
+                        'success' => static fn($record) => now()->diffInDays($record->expiry_date, false) > 3,
+                        'warning' => static fn($record) => now()->diffInDays($record->expiry_date, false) > 0 && now()->diffInDays($record->expiry_date, false) <= 3,
+                        'danger' => static fn($record) => now()->diffInDays($record->expiry_date, false) == 0,
+                        'secondary' => static fn($record) => now()->diffInDays($record->expiry_date, false) < 0,
+                    ])
                     ->sortable()
                     ->searchable(),
-                
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -230,4 +242,3 @@ class IngredientsResource extends Resource implements HasShieldPermissions
         ];
     }
 }
-
