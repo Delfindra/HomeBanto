@@ -179,7 +179,7 @@ class IngredientsResource extends Resource implements HasShieldPermissions
                         'success' => static fn($record) => now()->diffInDays($record->expiry_date, false) > 3,
                         'warning' => static fn($record) => now()->diffInDays($record->expiry_date, false) > 0 && now()->diffInDays($record->expiry_date, false) <= 3,
                         'danger' => static fn($record) => now()->diffInDays($record->expiry_date, false) == 0,
-                        'secondary' => static fn($record) => now()->diffInDays($record->expiry_date, false) < 0,
+                        'danger' => static fn($record) => now()->diffInDays($record->expiry_date, false) < 0,
                     ])
                     ->sortable()
                     ->searchable(),

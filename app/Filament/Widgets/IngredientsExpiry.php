@@ -45,7 +45,7 @@ class IngredientsExpiry extends BaseWidget
                         if ($daysLeft > 0) {
                             return "{$daysLeft}" . ($daysLeft === 1 ? ' day left ' : ' days left ');
                         } elseif ($daysLeft === 0) {
-                            return "Expires today";
+                            return "Expires tommorow";
                         } else {
                             return "Expired";
                         }
